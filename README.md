@@ -74,7 +74,7 @@ How this is marked:
 - 0/10 - "This looks like the tutorials copy pasted into the assignment"
 
 ## Documentation Template
-A template text file has been included in the cloned project. You will need to edit this file with information on what you have implemented in the assignment.
+A template text file called JUSTIFICATION.md has been included in the cloned project. You will need to edit this file with information on what you have implemented in the assignment.
 
 **Important: You will be documenting evidence of what you have worked on in the assignment and will be marked based on what you have claimed to have completed. If you leave this document unedited or empty, you will receive no marks for the assignment.**
 
