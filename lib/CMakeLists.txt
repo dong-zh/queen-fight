@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project("COMP3421 Assignment 1_lib")
 
-include (ExternalProject)
+include(ExternalProject)
 
 ExternalProject_Add(
         glm
