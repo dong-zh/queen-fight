@@ -6,7 +6,7 @@ then
   GENERATOR_ARG=""
 else
   echo "Using generator: $1"
-  GENERATOR_ARG="-G $1"
+  GENERATOR_ARG="-G$1"
 fi
 
 echo "Fetching dependencies..."
