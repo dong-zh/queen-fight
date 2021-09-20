@@ -7,28 +7,31 @@ set(CMAKE_CXX_STANDARD 17)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # If I was better at CMake I would make this nicer
-set(REQUIRED_LIBS glad glfw glm stb chicken3421)
-set(LIB_DIR ${PROJECT_SOURCE_DIR}/lib)
-set(N_DEPS 0)
-foreach(LIB ${REQUIRED_LIBS})
-    if(EXISTS ${LIB_DIR}/${LIB})
-        math(EXPR N_DEPS "${N_DEPS}+1")
-    endif()
-endforeach()
-if (N_DEPS LESS 5)
-    set(FETCH_DEP_SCRIPT ${LIB_DIR}/fetch_deps.sh)
+if (NOT (EXISTS ${PROJECT_SOURCE_DIR}/lib))
+    message(STATUS "Dependencies not found. Fetching...")
 
-    # Configure the "lib" directory as a separate project (whose sole purpose is to fetch dependencies)
-    execute_process(COMMAND sh ${FETCH_DEP_SCRIPT} ${CMAKE_GENERATOR} WORKING_DIRECTORY ${LIB_DIR})
+    if (WIN32)
+        execute_process(
+                COMMAND pwsh ${PROJECT_SOURCE_DIR}/fetch_deps.ps1 ${CMAKE_GENERATOR}
+                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        )
+    else()
+        execute_process(
+                COMMAND bash ${PROJECT_SOURCE_DIR}/fetch_deps.sh ${CMAKE_GENERATOR}
+                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        )
+    endif()
+
 endif()
 
-find_package(glad REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib/glad)
-find_package(glfw3 REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib/glfw)
-find_package(glm REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib/glm)
-find_package(stb REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib/stb)
-find_package(chicken3421 REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib/chicken3421)
+find_package(glad REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
+find_package(glfw3 REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
+find_package(glm REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
+find_package(stb REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
+find_package(assimp REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
+find_package(chicken3421 REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
 
-set(COMMON_LIBS glad::glad glm::glm glfw stb chicken3421)
+set(COMMON_LIBS glad::glad glm::glm glfw stb chicken3421 assimp::assimp)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
