@@ -8,20 +8,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # If I was better at CMake I would make this nicer
 if (NOT (EXISTS ${PROJECT_SOURCE_DIR}/lib))
-    message(STATUS "Dependencies not found. Fetching...")
-
-    if (WIN32)
-        execute_process(
-                COMMAND pwsh ${PROJECT_SOURCE_DIR}/fetch_deps.ps1 ${CMAKE_GENERATOR}
-                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-        )
-    else()
-        execute_process(
-                COMMAND bash ${PROJECT_SOURCE_DIR}/fetch_deps.sh ${CMAKE_GENERATOR}
-                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-        )
-    endif()
-
+    message(FATAL_ERROR "Dependencies not found. Please run fetch_deps[.sh|.ps1]")
 endif()
 
 find_package(glad REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)

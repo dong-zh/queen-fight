@@ -14,15 +14,15 @@ cd ${tmp_dir} || exit
 
 if [ $# -eq 0 ];
 then
-  echo "No generator given. Falling back to system default."
-  GENERATOR_ARG=""
+  echo "Running CMake with system defaults"
+  cmake_args="-DCMAKE_BUILD_TYPE=Default"
 else
-  echo "Using generator: $1"
-  GENERATOR_ARG="-G$1"
+  echo "Running CMake with args: $*"
+  cmake_args=$*
 fi
 
-cmake -S . -B ${tmp_dir} "$GENERATOR_ARG" \
-&& cmake --build ${tmp_dir}                        \
+cmake -S . -B ${tmp_dir} "$cmake_args"
+cmake --build ${tmp_dir}
 
 cd ..
 cmake --install ${tmp_dir}/${tmp_dir} --prefix .
