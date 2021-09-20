@@ -1,8 +1,9 @@
 # COMP3421 Assignment 1: Getting Ready for Graphics Programming
 
 ### Changelog
-- Version 1.0 (Release on 18/9/2021): Note that Information on Infrastructure is still pending.
-- Version 1.1 (Release on 18/9/2021): Assignment repos proper released to students
+- Version 1.0 (Released on 18/9/2021): Note that Information on Infrastructure is still pending.
+- Version 1.1 (Released on 18/9/2021): Assignment repos proper released to students
+- Version 1.2 (Released on 20/9/2021): Assignment build system and submission instructions updated
 
 ## Introduction
 The purpose of this assignment is to get you ready for Graphics Programming and to give you a taste of how the basic setup and "Hello World" of an OpenGL Programming environment should work.
