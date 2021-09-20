@@ -21,7 +21,7 @@ else
   cmake_args=$*
 fi
 
-cmake -S . -B ${tmp_dir} "$cmake_args"
+cmake -S . -B ${tmp_dir} $cmake_args
 cmake --build ${tmp_dir}
 
 cd ..
