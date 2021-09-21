@@ -8,7 +8,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # If I was better at CMake I would make this nicer
 if (NOT (EXISTS ${PROJECT_SOURCE_DIR}/lib))
-    message(FATAL_ERROR "Dependencies not found. Please run fetch_deps[.sh|.ps1]")
+    message(STATUS "Dependencies not found. Please run fetch_deps.sh [-G Ninja] from the project root and reconfigure")
 endif()
 
 find_package(glad REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
