@@ -93,9 +93,32 @@ public:
 	}
 
 private:
-	const unsigned ANIMATION_HOLD_TIME = 500;
-	const float VERTICAL_SPEED = .0005;
-	const float HORIZONTAL_SPEED = .0005;
+	static const unsigned ANIMATION_HOLD_TIME = 500;
+	static const float VERTICAL_SPEED = .0005;
+	static const float HORIZONTAL_SPEED = .0005;
+	static const int NUM_TEXTURES = 8;
+
+	const std::string TEXTURE_PATHS[NUM_TEXTURES] = {
+		"res/img/queen/queenHitLeft",
+		"res/img/queen/queenHitRight",
+		"res/img/queen/queenHurtLeft",
+		"res/img/queen/queenHurtRight",
+		"res/img/queen/queenIdle0",
+		"res/img/queen/queenIdle1",
+		"res/img/queen/queenSwingLeft",
+		"res/img/queen/queenSwingRight"
+	};
+
+	enum queenSprites {
+		HIT_LEFT,
+		HIT_RIGHT,
+		HURT_LEFT,
+		HURT_RIGHT,
+		IDLE0,
+		IDLE1,
+		SWING_LEFT,
+		SWING_RIGHT
+	};
 
 	long long lastTransition;
 	long long lastRender = -1;
@@ -106,39 +129,71 @@ private:
 	GLuint texture0;
 	GLuint texture1;
 
+	shapes::rect_t rectangle;
+
+	GLuint textures[NUM_TEXTURES];
+
 	int lastTexture = 0;
 
 	glm::mat4 translationMatrix = glm::mat4{1};
 	glm::mat4 scaleMatrix = glm::mat4{1};
 	glm::mat4 rotationMatrix = glm::mat4{1};
 
-	shapes::rect_t makeRectangle(float x, float y) {
-		const float DEFAULT_WIDTH = .2;
-		const float TEXTURE_RATIO = 49. / 38.;
-		return shapes::makeRectangle(-DEFAULT_WIDTH, -(DEFAULT_WIDTH / TEXTURE_RATIO), DEFAULT_WIDTH, DEFAULT_WIDTH / TEXTURE_RATIO);
+	void initTextures() {
+		for (int i = 0; i < NUM_TEXTURES; ++i) {
+			chicken3421::image_t image = chicken3421::load_image(TEXTURE_PATHS[i]);
+			GLint imageFormat = image.n_channels == 3 ? GL_RGB : GL_RGBA;
+			textures[i] = chicken3421::make_texture();
+			glBindTexture(GL_TEXTURE_2D, textures[i]);
+			glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, image.width, image.height, 0, imageFormat, GL_UNSIGNED_BYTE, image.data);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glGenerateMipmap(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, 0);    // unbind
+
+		}
+		rectangle = makeRectangle();
+
+		// car0 texture
+		// chicken3421::image_t car0 = chicken3421::load_image("res/img/car0.png");
+		// GLint car0ImageFormat = car0.n_channels == 3 ? GL_RGB : GL_RGBA;
+		// std::cout << "car0 " << car0.n_channels << " channels\n";
+		// texture0 = chicken3421::make_texture();
+		// glBindTexture(GL_TEXTURE_2D, texture0);
+		// glTexImage2D(GL_TEXTURE_2D, 0, car0ImageFormat, car0.width, car0.height, 0, car0ImageFormat, GL_UNSIGNED_BYTE, car0.data);
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		// glGenerateMipmap(GL_TEXTURE_2D);
+		// glBindTexture(GL_TEXTURE_2D, 0);    // unbind
+	}
+
+	shapes::rect_t makeRectangle() {
+		const float RATIO = 1.75;
+		const float WIDTH = .2;
+		return shapes::makeRectangle(-WIDTH, -(WIDTH / RATIO), WIDTH, WIDTH / RATIO);
 	}
 
 	long calculateNextTransition() {
 		return 0;
 	}
 
-	float calculateYTranslate(UserInput keyPresses, long long timeSinceLastRender) {
-		float yTranslate = 0;
-		if (keyPresses.upHeld) {
-			yTranslate = (float)timeSinceLastRender * VERTICAL_SPEED;
-		} else if (keyPresses.downHeld) {
-			yTranslate = -(float)timeSinceLastRender * VERTICAL_SPEED;
-		}
-		return yTranslate;
-	}
+	// float calculateYTranslate(UserInput keyPresses, long long timeSinceLastRender) {
+	// 	float yTranslate = 0;
+	// 	if (keyPresses.upHeld) {
+	// 		yTranslate = (float)timeSinceLastRender * VERTICAL_SPEED;
+	// 	} else if (keyPresses.downHeld) {
+	// 		yTranslate = -(float)timeSinceLastRender * VERTICAL_SPEED;
+	// 	}
+	// 	return yTranslate;
+	// }
 
-	float calculateXTranslate(UserInput keyPresses, long long timeSinceLastRender) {
-		float xTranslate = 0;
-		if (keyPresses.rightHeld) {
-			xTranslate = (float)timeSinceLastRender * HORIZONTAL_SPEED;
-		} else if (keyPresses.leftHeld) {
-			xTranslate = -(float)timeSinceLastRender * HORIZONTAL_SPEED;
-		}
-		return xTranslate;
-	}
+	// float calculateXTranslate(UserInput keyPresses, long long timeSinceLastRender) {
+	// 	float xTranslate = 0;
+	// 	if (keyPresses.rightHeld) {
+	// 		xTranslate = (float)timeSinceLastRender * HORIZONTAL_SPEED;
+	// 	} else if (keyPresses.leftHeld) {
+	// 		xTranslate = -(float)timeSinceLastRender * HORIZONTAL_SPEED;
+	// 	}
+	// 	return xTranslate;
+	// }
 };
