@@ -19,9 +19,8 @@
 #include "globalState.hpp"
 #include "queen.cpp"
 #include "thrasher.cpp"
-#include "shapes.hpp"
+#include "cityBackground.cpp"
 
-const bool DEBUG = true;
 // Global variable for key presses
 GlobalState *globalState;
 
@@ -32,28 +31,28 @@ void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
 int main() {
 	// General configuration
 	stbi_set_flip_vertically_on_load(true);
-	GLFWwindow *window = chicken3421::make_opengl_window(720, 720, "NUTDEALER");
+	GLFWwindow *window = chicken3421::make_opengl_window(900, 900, "NUTDEALER");
 	std::cout << glGetString(GL_VERSION) << '\n';
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
+	glfwSetKeyCallback(window, keyPressHandler);
 
 	// Makes the shaders and the program
 	GLuint vertexShader = chicken3421::make_shader("res/shaders/vert.vert", GL_VERTEX_SHADER);
 	GLuint fragShader = chicken3421::make_shader("res/shaders/frag.frag", GL_FRAGMENT_SHADER);
 	GLuint program = chicken3421::make_program(vertexShader, fragShader);
-
-	using namespace std::chrono;
-	long long now = time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count();
-
-	glfwSetKeyCallback(window, keyPressHandler);
-
 	glUseProgram(program);
 
-	globalState = new GlobalState(now);
+	// Initialise the global state
+	using namespace std::chrono;
+	globalState = new GlobalState(time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count());
 
+	// Renderable objects
 	Queen queen = Queen(program, globalState);
 	Thrasher thrasher = Thrasher(program, globalState);
+	CityBackground cityBackground = CityBackground(program);
+
 
 	while (!glfwWindowShouldClose(window)) {
 		globalState->now = time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count();
@@ -61,8 +60,9 @@ int main() {
 
 		// Set background
 		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(0, 0, .5, 1);
+		glClearColor(0, 0, 0, 1);
 
+		cityBackground.draw();
 		queen.frameTick();
 		thrasher.frameTick();
 
@@ -74,8 +74,7 @@ int main() {
 		glfwSwapBuffers(window);
 	}
 
-
-
+	std::cout << "Finished\n";
 	return EXIT_SUCCESS;
 }
 

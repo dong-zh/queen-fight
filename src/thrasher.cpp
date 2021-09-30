@@ -40,7 +40,9 @@ private:
 	const float HURT_VERTICAL_OFFSET = .15;
 
 	const float SWING_SPEED = .0075;
-	const float DODGE_SPEED = .0075;
+	const float DODGE_SPEED = .005;
+
+	const float DODGE_STRETCH_RATIO = 1.527;
 
 	static const unsigned NUM_TEXTURES = 8;
 	const std::string TEXTURE_PATHS[NUM_TEXTURES] = {
@@ -69,24 +71,24 @@ private:
 		STATE_IDLE,
 
 		STATE_DODGE_LEFT,
-		STATE_DOGE_RIGHT,
+		STATE_DODGE_RIGHT,
 		STATE_SWING,
 
 		STATE_HURT_LEFT,
 		STATE_HURT_RIGHT,
 
 		// REVIEW redundant?
-		STATE_DODGE_MOVE_LEFT,
-		STATE_DODGE_HOLD_LEFT,
-		STATE_DODGE_RETURN_LEFT,
+		// STATE_DODGE_MOVE_LEFT,
+		// STATE_DODGE_HOLD_LEFT,
+		// STATE_DODGE_RETURN_LEFT,
 
-		STATE_DODGE_MOVE_RIGHT,
-		STATE_DODGE_HOLD_RIGHT,
-		STATE_DODGE_RETURN_RIGHT,
+		// STATE_DODGE_MOVE_RIGHT,
+		// STATE_DODGE_HOLD_RIGHT,
+		// STATE_DODGE_RETURN_RIGHT,
 
-		STATE_SWING_MOVE,
-		STATE_SWING_HOLD,
-		STATE_SWING_RETURN,
+		// STATE_SWING_MOVE,
+		// STATE_SWING_HOLD,
+		// STATE_SWING_RETURN,
 	};
 
 	state_t lastState = STATE_IDLE;
@@ -114,7 +116,7 @@ private:
 	}
 
 	shapes::rect_t makeRectangle() {
-		const float RATIO = 1.6;
+		const float RATIO = (float)77 / (float)45;
 		const float WIDTH = .2;
 		return shapes::makeRectangle(-WIDTH, -(WIDTH * RATIO), WIDTH, WIDTH * RATIO);
 	}
@@ -129,7 +131,20 @@ private:
 		case STATE_IDLE:
 			idle();
 			break;
+		case STATE_DODGE_LEFT:
+			dodgeLeft();
+			break;
+		case STATE_DODGE_RIGHT:
+			dodgeRight();
+			break;
+		default:
+			std::cout << "Thrasher in invalid state, returning to idle\n";
+			currentState = STATE_IDLE;
+			idle();
 		}
+
+		lastState = currentState;
+		currentState = nextState;
 	}
 
 	// States
@@ -147,15 +162,94 @@ private:
 		} else if (globalState->leftHeld) {
 			nextState = STATE_DODGE_LEFT;
 		} else if (globalState->rightHeld) {
-			nextState = STATE_DODGE_HOLD_RIGHT;
+			nextState = STATE_DODGE_RIGHT;
 		}
-		// FIXME
-		nextState = STATE_IDLE;
+
 		translationMatrix = glm::translate(glm::mat4{1}, DEFAULT_IDLE_POSITION);
-		draw(SPRITE_IDLE_LEFT, translationMatrix);
+		draw(SPRITE_IDLE_RIGHT, translationMatrix);
 	}
 
-	void draw(sprite_t sprite, glm::mat4 translationMatrix = glm::mat4{1}, glm::mat4 scaleMatrix = glm::mat4{1}, glm::mat4 rotationMatrix = glm::mat4{1}) {
+	void dodgeLeft() {
+		if (globalState->DEBUG)
+			std::cout << "Thrasher is in dodge left state\n";
+
+		static long long stateStartTime = globalState->now;
+		static long long lastMovement = globalState->now;
+
+		// The dodging sprite should be stretched
+		glm::mat4 scaleMatrix = glm::scale(glm::mat4{1}, glm::vec3{DODGE_STRETCH_RATIO, 1, 1});
+
+		// State transition logic
+		nextState = STATE_DODGE_LEFT;
+		if (currentState != lastState) {
+			// Coming from another state
+			stateStartTime = globalState->now;
+		} else {
+			// Coming from the same state
+			// Checks substates
+			if (globalState->now >= stateStartTime + DODGE_MOVE_TIME + DODGE_HOLD_TIME + DODGE_MOVE_TIME) {
+				// Dodge state finished, should return to idle
+				nextState = STATE_IDLE;
+				translationMatrix = glm::translate(glm::mat4{1}, DEFAULT_IDLE_POSITION);
+			} else if (globalState->now >= stateStartTime + DODGE_MOVE_TIME + DODGE_HOLD_TIME) {
+				// Returning from dodge
+				float moveAmount = (globalState->now - lastMovement) * DODGE_SPEED;
+				translationMatrix = glm::translate(translationMatrix, glm::vec3{moveAmount, 0, 0});
+			} else if (globalState->now >= stateStartTime + DODGE_MOVE_TIME) {
+				// Dodge hold substate
+				// Do nothing, don't change the matrix
+			} else {
+				// Dodge starting
+				float moveAmount = (globalState->now - lastMovement) * -DODGE_SPEED;
+				translationMatrix = glm::translate(translationMatrix, glm::vec3{moveAmount, 0, 0});
+			}
+		}
+
+		draw(SPRITE_DODGE_LEFT, translationMatrix, glm::mat4{1}, scaleMatrix);
+		lastMovement = globalState->now;
+	}
+
+	void dodgeRight() {
+		if (globalState->DEBUG)
+			std::cout << "Thrasher is in dodge right state\n";
+
+		static long long stateStartTime = globalState->now;
+		static long long lastMovement = globalState->now;
+
+		// The dodging sprite should be stretched
+		glm::mat4 scaleMatrix = glm::scale(glm::mat4{1}, glm::vec3{DODGE_STRETCH_RATIO, 1, 1});
+
+		// State transition logic
+		nextState = STATE_DODGE_RIGHT;
+		if (currentState != lastState) {
+			// Coming from another state
+			stateStartTime = globalState->now;
+		} else {
+			// Coming from the same state
+			// Checks substates
+			if (globalState->now >= stateStartTime + DODGE_MOVE_TIME + DODGE_HOLD_TIME + DODGE_MOVE_TIME) {
+				// Dodge state finished, should return to idle
+				nextState = STATE_IDLE;
+				translationMatrix = glm::translate(glm::mat4{1}, DEFAULT_IDLE_POSITION);
+			} else if (globalState->now >= stateStartTime + DODGE_MOVE_TIME + DODGE_HOLD_TIME) {
+				// Returning from dodge
+				float moveAmount = (globalState->now - lastMovement) * -DODGE_SPEED;
+				translationMatrix = glm::translate(translationMatrix, glm::vec3{moveAmount, 0, 0});
+			} else if (globalState->now >= stateStartTime + DODGE_MOVE_TIME) {
+				// Dodge hold substate
+				// Do nothing, don't change the matrix
+			} else {
+				// Dodge starting
+				float moveAmount = (globalState->now - lastMovement) * DODGE_SPEED;
+				translationMatrix = glm::translate(translationMatrix, glm::vec3{moveAmount, 0, 0});
+			}
+		}
+
+		draw(SPRITE_DODGE_RIGHT, translationMatrix, glm::mat4{1}, scaleMatrix);
+		lastMovement = globalState->now;
+	}
+
+	void draw(sprite_t sprite, glm::mat4 translationMatrix = glm::mat4{1}, glm::mat4 rotationMatrix = glm::mat4{1}, glm::mat4 scaleMatrix = glm::mat4{1}) {
 		glUniformMatrix4fv(glGetUniformLocation(program, "transformMatrix"), 1, GL_FALSE, glm::value_ptr(translationMatrix * rotationMatrix * scaleMatrix));
 		GLuint textureToBind = textures[sprite];
 		glBindTexture(GL_TEXTURE_2D, textureToBind);

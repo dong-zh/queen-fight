@@ -153,8 +153,9 @@ private:
 			break;
 
 		default:
-			if (globalState->DEBUG)
-				std::cout << "INVALID STATE\n";
+			std::cout << "Queen in invalid state, returning to idle\n";
+			currentState = STATE_IDLE;
+			idle();
 		}
 
 		lastState = currentState;
@@ -168,7 +169,7 @@ private:
 		static long long lastAttackCalculation = globalState->now;
 
 		// If time to attack and random generator says attack
-		if (globalState->now > lastAttackCalculation + TIME_BETWEEN_ATTACK_CHECK && rand() % 100 < ATTACK_CHANCE) {
+		if (globalState->now >= lastAttackCalculation + TIME_BETWEEN_ATTACK_CHECK && rand() % 100 < ATTACK_CHANCE) {
 			if (rand() % 100 < ATTACK_CHANCE) {
 				// Attack now
 				// 50 50 chance of attack left or attacking right
@@ -193,7 +194,7 @@ private:
 		// Queen isn't invincible when idle
 		globalState->queenInvincible = false;
 
-		if (globalState->now > lastSpriteSwitch + IDLE_TEXTURE_HOLD_TIME) {
+		if (globalState->now >= lastSpriteSwitch + IDLE_TEXTURE_HOLD_TIME) {
 			// Should switch idle sprites
 			currentSprite = currentSprite == SPRITE_IDLE1 ? SPRITE_IDLE0 : SPRITE_IDLE1;
 			lastSpriteSwitch = globalState->now;
@@ -238,7 +239,7 @@ private:
 			translationMatrix = glm::translate(translationMatrix, glm::vec3{-HURT_HORIZONTAL_OFFSET, HURT_VERTICAL_OFFSET, 0});
 		} else {
 			// Already holding
-			if (globalState->now > stateStartTime + HURT_LEFT_HOLD_TIME) {
+			if (globalState->now >= stateStartTime + HURT_LEFT_HOLD_TIME) {
 				// Finished holding
 				nextState = STATE_IDLE;
 			}
@@ -269,7 +270,7 @@ private:
 			translationMatrix = glm::translate(translationMatrix, glm::vec3{HURT_HORIZONTAL_OFFSET, HURT_VERTICAL_OFFSET, 0});
 		} else {
 			// Already holding
-			if (globalState->now > stateStartTime + HURT_RIGHT_HOLD_TIME) {
+			if (globalState->now >= stateStartTime + HURT_RIGHT_HOLD_TIME) {
 				// Finished holding
 				nextState = STATE_IDLE;
 			}
@@ -295,7 +296,7 @@ private:
 			translationMatrix = glm::translate(translationMatrix, glm::vec3{-HOLD_HORIZONTAL_OFFSET, 0, 0});
 		} else {
 			// Already holding
-			if (globalState->now > stateStartTime + SWING_LEFT_HOLD_TIME) {
+			if (globalState->now >= stateStartTime + SWING_LEFT_HOLD_TIME) {
 				// Finished holding
 				nextState = STATE_SWING_LEFT_MOVE;
 			}
@@ -320,7 +321,7 @@ private:
 			translationMatrix = glm::translate(translationMatrix, glm::vec3{HOLD_HORIZONTAL_OFFSET, 0, 0});
 		} else {
 			// Already holding
-			if (globalState->now > stateStartTime + SWING_RIGHT_HOLD_TIME) {
+			if (globalState->now >= stateStartTime + SWING_RIGHT_HOLD_TIME) {
 				// Finished holding
 				nextState = STATE_SWING_RIGHT_MOVE;
 			}
@@ -347,7 +348,7 @@ private:
 			// translationMatrix = glm::mat4{1};
 		} else {
 			// Already holding
-			if (globalState->now > stateStartTime + SWING_LEFT_HOLD_TIME) {
+			if (globalState->now >= stateStartTime + SWING_LEFT_HOLD_TIME) {
 				// Finished holding
 				nextState = STATE_HIT_LEFT_HOLD;
 			}
@@ -379,7 +380,7 @@ private:
 			// translationMatrix = glm::mat4{1};
 		} else {
 			// Already holding
-			if (globalState->now > stateStartTime + SWING_RIGHT_HOLD_TIME) {
+			if (globalState->now >= stateStartTime + SWING_RIGHT_HOLD_TIME) {
 				// Finished holding
 				nextState = STATE_HIT_RIGHT_HOLD;
 			}
@@ -409,7 +410,7 @@ private:
 			stateStartTime = globalState->now;
 		} else {
 			// Already holding
-			if (globalState->now > stateStartTime + HIT_LEFT_HOLD_TIME) {
+			if (globalState->now >= stateStartTime + HIT_LEFT_HOLD_TIME) {
 				// Finished holding
 				nextState = STATE_IDLE;
 			}
@@ -435,7 +436,7 @@ private:
 			stateStartTime = globalState->now;
 		} else {
 			// Already holding
-			if (globalState->now > stateStartTime + HIT_RIGHT_HOLD_TIME) {
+			if (globalState->now >= stateStartTime + HIT_RIGHT_HOLD_TIME) {
 				// Finished holding
 				nextState = STATE_IDLE;
 			}
