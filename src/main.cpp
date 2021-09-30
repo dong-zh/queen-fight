@@ -102,6 +102,8 @@ void keyPressHandler(GLFWwindow *window, int key, int scancode, int action, int 
 	case GLFW_KEY_LEFT:
 		globalState->leftHeld = keyPressed;
 		break;
+
+	// Debug keys
 	case GLFW_KEY_1:
 		globalState->oneHeld = keyPressed;
 		globalState->thrasherAttacking = keyPressed ? GlobalState::LEFT : GlobalState::NOT_ATTACKING;
@@ -112,9 +114,11 @@ void keyPressHandler(GLFWwindow *window, int key, int scancode, int action, int 
 		break;
 	case GLFW_KEY_3:
 		globalState->threeHeld = keyPressed;
+		globalState->queenAttacking = keyPressed ? GlobalState::LEFT : GlobalState::NOT_ATTACKING;
 		break;
 	case GLFW_KEY_4:
 		globalState->fourHeld = keyPressed;
+		globalState->queenAttacking = keyPressed ? GlobalState::RIGHT : GlobalState::NOT_ATTACKING;
 		break;
 	}
 }

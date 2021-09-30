@@ -36,13 +36,15 @@ private:
 
 	const glm::vec3 DEFAULT_IDLE_POSITION = glm::vec3{0, -.5, 0};
 
-	const float HURT_HORIZONTAL_OFFSET = .1;
-	const float HURT_VERTICAL_OFFSET = .15;
+	const float HURT_LEFT_OFFSET = .1;
+	const float HURT_RIGHT_OFFSET = .1;
+	const float HURT_VERTICAL_OFFSET = .1;
 
 	const float SWING_SPEED = .0075;
 	const float DODGE_SPEED = .005;
 
 	const float DODGE_STRETCH_RATIO = 1.527;
+	const float HURT_STRETCH_RATIO = 1.334;
 
 	static const unsigned NUM_TEXTURES = 8;
 	const std::string TEXTURE_PATHS[NUM_TEXTURES] = {
@@ -76,19 +78,6 @@ private:
 
 		STATE_HURT_LEFT,
 		STATE_HURT_RIGHT,
-
-		// REVIEW redundant?
-		// STATE_DODGE_MOVE_LEFT,
-		// STATE_DODGE_HOLD_LEFT,
-		// STATE_DODGE_RETURN_LEFT,
-
-		// STATE_DODGE_MOVE_RIGHT,
-		// STATE_DODGE_HOLD_RIGHT,
-		// STATE_DODGE_RETURN_RIGHT,
-
-		// STATE_SWING_MOVE,
-		// STATE_SWING_HOLD,
-		// STATE_SWING_RETURN,
 	};
 
 	state_t lastState = STATE_IDLE;
@@ -137,6 +126,12 @@ private:
 		case STATE_DODGE_RIGHT:
 			dodgeRight();
 			break;
+		case STATE_HURT_LEFT:
+			hurtLeft();
+			break;
+		case STATE_HURT_RIGHT:
+			hurtRight();
+			break;
 		default:
 			std::cout << "Thrasher in invalid state, returning to idle\n";
 			currentState = STATE_IDLE;
@@ -176,7 +171,7 @@ private:
 		static long long stateStartTime = globalState->now;
 		static long long lastMovement = globalState->now;
 
-		// The dodging sprite should be stretched
+		// Dodging sprite should be stretched
 		glm::mat4 scaleMatrix = glm::scale(glm::mat4{1}, glm::vec3{DODGE_STRETCH_RATIO, 1, 1});
 
 		// State transition logic
@@ -247,6 +242,60 @@ private:
 
 		draw(SPRITE_DODGE_RIGHT, translationMatrix, glm::mat4{1}, scaleMatrix);
 		lastMovement = globalState->now;
+	}
+
+	void hurtLeft() {
+		if (globalState->DEBUG)
+			std::cout << "Thrasher is in hurt left state\n";
+
+		static long long stateStartTime = globalState->now;
+
+		// Hurt sprite should be stretched
+		glm::mat4 scaleMatrix = glm::scale(glm::mat4{1}, glm::vec3{HURT_STRETCH_RATIO, 1, 1});
+
+		globalState->thrasherInvincible = false;
+
+		// State transition logic
+		nextState = STATE_HURT_LEFT;
+		if (currentState != lastState) {
+			// Coming from another state
+			stateStartTime = globalState->now;
+			translationMatrix = glm::translate(translationMatrix, glm::vec3{-HURT_LEFT_OFFSET, -HURT_VERTICAL_OFFSET, 0});
+		} else if (globalState->now >= stateStartTime + HURT_HOLD_TIME) {
+			// Hurt state finished, should return to idle
+			nextState = STATE_IDLE;
+			translationMatrix = glm::translate(glm::mat4{1}, DEFAULT_IDLE_POSITION);
+		}
+		// Otherwise, still hurt, do nothing
+
+		draw(SPRITE_HURT_RIGHT, translationMatrix, glm::mat4{1}, scaleMatrix);
+	}
+
+	void hurtRight() {
+		if (globalState->DEBUG)
+			std::cout << "Thrasher is in hurt right state\n";
+
+		static long long stateStartTime = globalState->now;
+
+		// Hurt sprite should be stretched
+		glm::mat4 scaleMatrix = glm::scale(glm::mat4{1}, glm::vec3{HURT_STRETCH_RATIO, 1, 1});
+
+		globalState->thrasherInvincible = false;
+
+		// State transition logic
+		nextState = STATE_HURT_RIGHT;
+		if (currentState != lastState) {
+			// Coming from another state
+			stateStartTime = globalState->now;
+			translationMatrix = glm::translate(translationMatrix, glm::vec3{HURT_RIGHT_OFFSET, -HURT_VERTICAL_OFFSET, 0});
+		} else if (globalState->now >= stateStartTime + HURT_HOLD_TIME) {
+			// Hurt state finished, should return to idle
+			nextState = STATE_IDLE;
+			translationMatrix = glm::translate(glm::mat4{1}, DEFAULT_IDLE_POSITION);
+		}
+		// Otherwise, still hurt, do nothing
+
+		draw(SPRITE_HURT_LEFT, translationMatrix, glm::mat4{1}, scaleMatrix);
 	}
 
 	void draw(sprite_t sprite, glm::mat4 translationMatrix = glm::mat4{1}, glm::mat4 rotationMatrix = glm::mat4{1}, glm::mat4 scaleMatrix = glm::mat4{1}) {

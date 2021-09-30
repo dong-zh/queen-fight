@@ -40,8 +40,8 @@ private:
 	const float HURT_VERTICAL_OFFSET = .15;
 
 	const float HOLD_HORIZONTAL_OFFSET = .2;
-	const float SWING_VERTICAL_MOVE_SPEED = .0075;
-	const float SWING_HORIZONTAL_MOVE_SPEED = .0015;
+	const float SWING_VERTICAL_MOVE_SPEED = .009;
+	const float SWING_HORIZONTAL_MOVE_SPEED = .004;
 
 	static const unsigned NUM_TEXTURES = 9;
 	const std::string TEXTURE_PATHS[NUM_TEXTURES] = {
@@ -401,13 +401,13 @@ private:
 
 		static long long stateStartTime = globalState->now;
 
-		globalState->queenAttacking = GlobalState::LEFT;
 
 		// State transition logic
 		nextState = STATE_HIT_LEFT_HOLD;
 		if (currentState != lastState) {
 			// Starting hold
 			stateStartTime = globalState->now;
+			globalState->queenAttacking = GlobalState::LEFT;
 		} else {
 			// Already holding
 			if (globalState->now >= stateStartTime + HIT_LEFT_HOLD_TIME) {
@@ -427,13 +427,13 @@ private:
 
 		static long long stateStartTime = globalState->now;
 
-		globalState->queenAttacking = GlobalState::RIGHT;
 
 		// State transition logic
 		nextState = STATE_HIT_RIGHT_HOLD;
 		if (currentState != lastState) {
 			// Starting hold
 			stateStartTime = globalState->now;
+			globalState->queenAttacking = GlobalState::RIGHT;
 		} else {
 			// Already holding
 			if (globalState->now >= stateStartTime + HIT_RIGHT_HOLD_TIME) {
