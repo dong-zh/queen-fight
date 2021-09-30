@@ -17,11 +17,12 @@
 #include <stb/stb_image.h>
 
 #include "shapes.hpp"
-#include "Car.cpp"
-#include "userInput.hpp"
+#include "queen.cpp"
+#include "globalState.hpp"
 
+const bool DEBUG = true;
 // Global variable for key presses
-UserInput keyPresses;
+GlobalState *globalState;
 
 void keyPressHandler(GLFWwindow *window, int key, int scancode, int action, int mods);
 
@@ -38,26 +39,31 @@ int main() {
 
 	GLuint program = chicken3421::make_program(vertexShader, fragShader);
 
-
+	unsigned long frameCounter = 0;
 	using namespace std::chrono;
 	long long now = time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count();
 
 	glfwSetKeyCallback(win, keyPressHandler);
 
-	auto car0 = Car(program, 0, 0, now);
-	auto car1 = Car(program, .2, 0, now);
 	glUseProgram(program);
 
+	globalState = new GlobalState(now);
+
+	auto queen = Queen(program, globalState);
 	while (!glfwWindowShouldClose(win)) {
-		now = time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count();
+		globalState->now = time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count();
 
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0, 0, 0, 1);
 
-		// car1.render(0);
-		car0.render(now, keyPresses);
+		queen.frameTick();
 
+		if (globalState->DEBUG) {
+			globalState->printGlobalState();
+		}
+
+		++frameCounter;
 		glfwSwapBuffers(win);
 	}
 
@@ -71,28 +77,42 @@ void processLogic(long long now) {
 }
 
 void keyPressHandler(GLFWwindow *window, int key, int scancode, int action, int mods) {
-	bool keyHeld;
+	bool keyPressed;
 	// Only handle key pressed and key released
 	if (action == GLFW_PRESS) {
-		keyHeld = true;
+		keyPressed = true;
 	} else if (action == GLFW_RELEASE) {
-		keyHeld = false;
+		keyPressed = false;
 	} else {
 		return;
 	}
 
 	switch (key) {
-		case GLFW_KEY_UP:
-			keyPresses.upHeld = keyHeld;
-			break;
-		case GLFW_KEY_DOWN:
-			keyPresses.downHeld = keyHeld;
-			break;
-		case GLFW_KEY_RIGHT:
-			keyPresses.rightHeld = keyHeld;
-			break;
-		case GLFW_KEY_LEFT:
-			keyPresses.leftHeld = keyHeld;
-			break;
+	case GLFW_KEY_UP:
+		globalState->upHeld = keyPressed;
+		break;
+	case GLFW_KEY_DOWN:
+		globalState->downHeld = keyPressed;
+		break;
+	case GLFW_KEY_RIGHT:
+		globalState->rightHeld = keyPressed;
+		break;
+	case GLFW_KEY_LEFT:
+		globalState->leftHeld = keyPressed;
+		break;
+	case GLFW_KEY_1:
+		globalState->oneHeld = keyPressed;
+		globalState->thrasherAttacking = keyPressed ? GlobalState::LEFT : GlobalState::NOT_ATTACKING;
+		break;
+	case GLFW_KEY_2:
+		globalState->twoHeld = keyPressed;
+		globalState->thrasherAttacking = keyPressed ? GlobalState::RIGHT : GlobalState::NOT_ATTACKING;
+		break;
+	case GLFW_KEY_3:
+		globalState->threeHeld = keyPressed;
+		break;
+	case GLFW_KEY_4:
+		globalState->fourHeld = keyPressed;
+		break;
 	}
 }
