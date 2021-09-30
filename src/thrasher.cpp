@@ -1,3 +1,6 @@
+#ifndef THRASHER_CPP
+#define THRASHER_CPP
+
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -9,10 +12,12 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "shapes.hpp"
-#include "globalState.hpp"
+#include "globalState.cpp"
 
+// Thrashes stuff
 class Thrasher {
 public:
+	// Creates a Thrasher and loads all the textures
 	Thrasher(GLuint program, GlobalState *globalState):
 		program(program),
 		globalState(globalState)
@@ -20,6 +25,7 @@ public:
 		init();
 	}
 
+	// Transition the state
 	void frameTick() {
 		processState();
 	}
@@ -28,24 +34,27 @@ private:
 	GlobalState *globalState;
 	GLuint program;
 
+	// Times for the animations
+	const unsigned HURT_HOLD_TIME = 500;
 
-	static const unsigned HURT_HOLD_TIME = 500;
+	const unsigned PUNCH_MOVE_TIME = 100;
+	const unsigned PUNCH_HOLD_TIME = 200;
 
-	static const unsigned PUNCH_MOVE_TIME = 100;
-	static const unsigned PUNCH_HOLD_TIME = 200;
-
-	static const unsigned DODGE_MOVE_TIME = 250;
-	static const unsigned DODGE_HOLD_TIME = 200;
+	const unsigned DODGE_MOVE_TIME = 250;
+	const unsigned DODGE_HOLD_TIME = 200;
 
 	const glm::vec3 DEFAULT_IDLE_POSITION = glm::vec3{0, -.5, 0};
 
+	// How far away from the default idle position should these states be
 	const float HURT_LEFT_OFFSET = .1;
 	const float HURT_RIGHT_OFFSET = .1;
 	const float HURT_VERTICAL_OFFSET = .1;
 
+	// How fast the thrasher should move in these states
 	const float PUNCH_SPEED = .0075;
 	const float DODGE_SPEED = .005;
 
+	// Factors to multiply the rectangle by to fit the sprite's aspect ratio
 	const float DODGE_STRETCH_RATIO = 1.527;
 	const float HURT_STRETCH_RATIO = 1.334;
 	const float PUNCH_STRETCH_RATIO = .7576;
@@ -62,6 +71,7 @@ private:
 		"res/img/thrasher/thrasherPunchRight.png",
 	};
 
+	// Sprite enum to reduce magic numbers
 	enum sprite_t {
 		SPRITE_DODGE_LEFT,
 		SPRITE_DODGE_RIGHT,
@@ -73,6 +83,7 @@ private:
 		SPRITE_PUNCH_RIGHT,
 	};
 
+	// State enum to reduce magic numbers
 	enum state_t {
 		STATE_IDLE,
 
@@ -84,16 +95,20 @@ private:
 		STATE_HURT_RIGHT,
 	};
 
+	// State machine states
 	state_t lastState = STATE_IDLE;
 	state_t currentState = STATE_IDLE;
 	state_t nextState = STATE_IDLE;
 
+	// The single rectangle that the textures are applied to
 	shapes::rect_t rectangle;
+	// The texture indxes are stored here
 	GLuint textures[NUM_TEXTURES];
 
-	// Prevents duplicate punches being recorded
+	// Prevents duplicate punches from being recorded, Queen doesn't have this problem because that state machine has separate hold states
 	bool punchRecorded = false;
 
+	// Position of the object that persists across states
 	glm::mat4 translationMatrix = glm::mat4{1};
 
 	void init() {
@@ -117,6 +132,7 @@ private:
 		return shapes::makeRectangle(-WIDTH, -(WIDTH * RATIO), WIDTH, WIDTH * RATIO);
 	}
 
+	// Finite state machine
 	void processState() {
 		// Default state variables
 		globalState->thrasherAttacking = GlobalState::NOT_ATTACKING;
@@ -153,6 +169,7 @@ private:
 	}
 
 	// States
+	// Idle state, Thrasher sits and does nothing, can transition into dodge, hurt, and punch states
 	void idle() {
 		if (globalState->DEBUG)
 			std::cout << "Thrasher in idle state\n";
@@ -184,6 +201,7 @@ private:
 		draw(SPRITE_IDLE_RIGHT, translationMatrix);
 	}
 
+	// Dodge left state, can transition into idle state
 	void dodgeLeft() {
 		if (globalState->DEBUG)
 			std::cout << "Thrasher is in dodge left state\n";
@@ -227,6 +245,7 @@ private:
 		lastMovement = globalState->now;
 	}
 
+	// Dodge right state, can transition into idle state
 	void dodgeRight() {
 		if (globalState->DEBUG)
 			std::cout << "Thrasher is in dodge right state\n";
@@ -269,6 +288,7 @@ private:
 		lastMovement = globalState->now;
 	}
 
+	// Hurt left state, can transition into idle state
 	void hurtLeft() {
 		if (globalState->DEBUG)
 			std::cout << "Thrasher is in hurt left state\n";
@@ -297,6 +317,7 @@ private:
 		draw(SPRITE_HURT_RIGHT, translationMatrix, glm::mat4{1}, scaleMatrix);
 	}
 
+	// Hurt right state, can transition into idle state
 	void hurtRight() {
 		if (globalState->DEBUG)
 			std::cout << "Thrasher is in hurt right state\n";
@@ -325,6 +346,7 @@ private:
 		draw(SPRITE_HURT_LEFT, translationMatrix, glm::mat4{1}, scaleMatrix);
 	}
 
+	// Punch state, can transition into either of the hurt states or idle state
 	void punch() {
 		if (globalState->DEBUG)
 			std::cout << "Thrasher is in punch state\n";
@@ -381,6 +403,14 @@ private:
 		lastMovement = globalState->now;
 	}
 
+	/**
+	 * @brief Draws the Thrasher on the screen. Matrices are applied in the conventional way (TRS)
+	 *
+	 * @param sprite Which sprite to use
+	 * @param translationMatrix Translation to apply to the sprite
+	 * @param rotationMatrix Rotation to apply to the sprite
+	 * @param scaleMatrix Scale to apply to the sprite
+	 */
 	void draw(sprite_t sprite, glm::mat4 translationMatrix = glm::mat4{1}, glm::mat4 rotationMatrix = glm::mat4{1}, glm::mat4 scaleMatrix = glm::mat4{1}) {
 		glUniformMatrix4fv(glGetUniformLocation(program, "transformMatrix"), 1, GL_FALSE, glm::value_ptr(translationMatrix * rotationMatrix * scaleMatrix));
 		GLuint textureToBind = textures[sprite];
@@ -395,3 +425,5 @@ private:
 		glBindVertexArray(0);
 	}
 };
+
+#endif

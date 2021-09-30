@@ -16,7 +16,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <stb/stb_image.h>
 
-#include "globalState.hpp"
+#include "globalState.cpp"
 #include "queen.cpp"
 #include "thrasher.cpp"
 #include "background.cpp"

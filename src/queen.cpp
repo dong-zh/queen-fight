@@ -1,3 +1,7 @@
+
+#ifndef QUEEN_CPP
+#define QUEEN_CPP
+
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -9,7 +13,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "shapes.hpp"
-#include "globalState.hpp"
+#include "globalState.cpp"
 
 class Queen {
 public:
@@ -466,3 +470,5 @@ private:
 		glBindVertexArray(0);
 	}
 };
+
+#endif

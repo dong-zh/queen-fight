@@ -1,9 +1,18 @@
-#ifndef GLOBAL_STATE_HPP
-#define GLOBAL_STATE_HPP
+#ifndef GLOBAL_STATE_CPP
+#define GLOBAL_STATE_CPP
 
 #include <stdio.h>
+#include <iostream>
 
+/**
+ * @brief The state of the world
+ */
 struct GlobalState {
+/**
+ * @brief Creates a world state
+ *
+ * @param now The current time in milliseconds
+ */
 	GlobalState(long long now):	now(now) {}
 
 	const int QUEEN_ATTACK_POWER = 5;
@@ -19,8 +28,10 @@ struct GlobalState {
 		RIGHT
 	};
 
+	// Game ends when this is set to true
 	bool gameOver = false;
 
+	// Whether the keys are held down at this particular time
 	bool upHeld = false;
 	bool leftHeld = false;
 	bool rightHeld = false;
@@ -30,14 +41,19 @@ struct GlobalState {
 	bool threeHeld = false;
 	bool fourHeld = false;
 
+	// Combat variables for Queen
 	bool queenInvincible = false;
 	int queenHealth = 100;
 	AttackDirection queenAttacking = NOT_ATTACKING;
 
+	// Combat variables for Thrasher
 	bool thrasherInvincible = false;
 	int thrasherHealth = 100;
 	AttackDirection thrasherAttacking = NOT_ATTACKING;
 
+	/**
+	 * @brief Checks whether combat is occurign and deducts HP accordingly. Also checks for game over condition
+	 */
 	void checkCombat() {
 		if (queenAttacking != NOT_ATTACKING && !thrasherInvincible) {
 			// Queen hit thrasher
@@ -58,14 +74,17 @@ struct GlobalState {
 		}
 	}
 
+	/**
+	 * @brief Gets a formatted printout of Queen's and Thrasher's health
+	 *
+	 * @return The formatted message
+	 */
 	std::string getHealthMessage() {
 		return "Queen's HP:\t" + std::to_string(queenHealth) + "\nThrasher's HP:\t" + std::to_string(thrasherHealth) + "\n";
 	}
 
 	/**
-	 * @brief Prints a global state for debugging
-	 *
-	 * @param state The state to print
+	 * @brief Prints the global state for debugging
 	 */
 	void printGlobalState() {
 		printf(
