@@ -10,10 +10,10 @@
 
 #include "shapes.hpp"
 
-class CityBackground {
+class Background {
 public:
-	CityBackground(GLuint program): program(program) {
-		chicken3421::image_t image = chicken3421::load_image(TEXTURE_PATH);
+	Background(GLuint program, std::string texturePath): program(program) {
+		chicken3421::image_t image = chicken3421::load_image(texturePath);
 		GLint imageFormat = image.n_channels == 3 ? GL_RGB : GL_RGBA;
 		texture = chicken3421::make_texture();
 		glBindTexture(GL_TEXTURE_2D, texture);
@@ -40,8 +40,6 @@ public:
 	}
 
 private:
-	const std::string TEXTURE_PATH = "res/img/cityBackground.png";
-
 	GLuint program;
 	GLuint texture;
 	shapes::rect_t rectangle;

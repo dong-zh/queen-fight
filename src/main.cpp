@@ -19,20 +19,24 @@
 #include "globalState.hpp"
 #include "queen.cpp"
 #include "thrasher.cpp"
-#include "cityBackground.cpp"
+#include "background.cpp"
 
 // Global variable for key presses
 GlobalState *globalState;
 
 void keyPressHandler(GLFWwindow *window, int key, int scancode, int action, int mods);
 void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
+void doGameOver(GLFWwindow *window, GLuint program);
 
+const std::string CITY_BACKGROUND_PATH = "res/img/cityBackground.png";
+const std::string WIN_IMAGE_PATH = "res/img/youWon.png";
+const std::string LOSE_IMAGE_PATH = "res/img/gameOver.png";
 
 int main() {
 	// General configuration
 	stbi_set_flip_vertically_on_load(true);
 	GLFWwindow *window = chicken3421::make_opengl_window(900, 900, "NUTDEALER");
-	std::cout << glGetString(GL_VERSION) << '\n';
+	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << '\n';
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
@@ -51,10 +55,9 @@ int main() {
 	// Renderable objects
 	Queen queen = Queen(program, globalState);
 	Thrasher thrasher = Thrasher(program, globalState);
-	CityBackground cityBackground = CityBackground(program);
+	Background cityBackground = Background(program, CITY_BACKGROUND_PATH);
 
-
-	while (!glfwWindowShouldClose(window)) {
+	while (!glfwWindowShouldClose(window) && !globalState->gameOver) {
 		globalState->now = time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count();
 		glfwPollEvents();
 
@@ -70,14 +73,34 @@ int main() {
 			globalState->printGlobalState();
 		}
 
+		globalState->checkCombat();
+
 		++globalState->frameCounter;
 		glfwSwapBuffers(window);
+
+		// globalState->queenHealth = 0;
+		// break;
 	}
 
+	doGameOver(window, program);
 	std::cout << "Finished\n";
 	return EXIT_SUCCESS;
 }
 
+void doGameOver(GLFWwindow *window, GLuint program) {
+	while (!glfwWindowShouldClose(window)) {
+		glfwPollEvents();
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(0, 0, 0, 1);
+		if (globalState->queenHealth <= 0) {
+			// Player won
+			Background(program, WIN_IMAGE_PATH).draw();
+		} else {
+			Background(program, LOSE_IMAGE_PATH).draw();
+		}
+		glfwSwapBuffers(window);
+	}
+}
 void keyPressHandler(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	bool keyPressed;
 	// Only handle key pressed and key released
@@ -92,9 +115,6 @@ void keyPressHandler(GLFWwindow *window, int key, int scancode, int action, int 
 	switch (key) {
 	case GLFW_KEY_UP:
 		globalState->upHeld = keyPressed;
-		break;
-	case GLFW_KEY_DOWN:
-		globalState->downHeld = keyPressed;
 		break;
 	case GLFW_KEY_RIGHT:
 		globalState->rightHeld = keyPressed;

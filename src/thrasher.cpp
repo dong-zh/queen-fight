@@ -91,6 +91,9 @@ private:
 	shapes::rect_t rectangle;
 	GLuint textures[NUM_TEXTURES];
 
+	// Prevents duplicate punches being recorded
+	bool punchRecorded = false;
+
 	glm::mat4 translationMatrix = glm::mat4{1};
 
 	void init() {
@@ -155,6 +158,9 @@ private:
 			std::cout << "Thrasher in idle state\n";
 
 		globalState->thrasherInvincible = false;
+
+		// Reset punch
+		punchRecorded = false;
 
 		nextState = STATE_IDLE;
 		// Queen attacking
@@ -360,7 +366,10 @@ private:
 				translationMatrix = glm::translate(translationMatrix, glm::vec3{0, -moveAmount, 0});
 			} else if (globalState->now >= stateStartTime + PUNCH_MOVE_TIME) {
 				// Punch hold substate
-				globalState->thrasherAttacking = leftPunch ? GlobalState::LEFT : GlobalState::RIGHT;
+				if (!punchRecorded) {
+					globalState->thrasherAttacking = leftPunch ? GlobalState::LEFT : GlobalState::RIGHT;
+					punchRecorded = true;
+				}
 			} else {
 				// Punch starting
 				float moveAmount = (globalState->now - lastMovement) * PUNCH_SPEED;

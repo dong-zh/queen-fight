@@ -6,6 +6,9 @@
 struct GlobalState {
 	GlobalState(long long now):	now(now) {}
 
+	const int QUEEN_ATTACK_POWER = 5;
+	const int THRASHER_ATTACK_POWER = 5;
+
 	const bool DEBUG = false;
 	unsigned long frameCounter = 0;
 	long long now = -1;
@@ -16,8 +19,9 @@ struct GlobalState {
 		RIGHT
 	};
 
+	bool gameOver = false;
+
 	bool upHeld = false;
-	bool downHeld = false;
 	bool leftHeld = false;
 	bool rightHeld = false;
 	// Keys for debugging
@@ -34,6 +38,30 @@ struct GlobalState {
 	int thrasherHealth = 100;
 	AttackDirection thrasherAttacking = NOT_ATTACKING;
 
+	void checkCombat() {
+		if (queenAttacking != NOT_ATTACKING && !thrasherInvincible) {
+			// Queen hit thrasher
+			std::cout << "Queen hit Thrasher\n";
+			thrasherHealth -= QUEEN_ATTACK_POWER;
+			std::cout << getHealthMessage();
+		}
+
+		if (thrasherAttacking != NOT_ATTACKING && !queenInvincible) {
+			// Thrasher hit Queen
+			std::cout << "Thrasher hit Queen\n";
+			queenHealth -= THRASHER_ATTACK_POWER;
+			std::cout << getHealthMessage();
+		}
+
+		if (queenHealth <= 0 || thrasherHealth <= 0) {
+			gameOver = true;
+		}
+	}
+
+	std::string getHealthMessage() {
+		return "Queen's HP:\t" + std::to_string(queenHealth) + "\nThrasher's HP:\t" + std::to_string(thrasherHealth) + "\n";
+	}
+
 	/**
 	 * @brief Prints a global state for debugging
 	 *
@@ -43,7 +71,6 @@ struct GlobalState {
 		printf(
 			"Keys held\n"
 			"\tUp: %s\n"
-			"\tDown: %s\n"
 			"\tLeft: %s\n"
 			"\tRight: %s\n"
 			"\t1: %s\n"
@@ -62,7 +89,6 @@ struct GlobalState {
 			"\tAttacking: %d\n",
 
 			upHeld ? "true" : "false",
-			downHeld ? "true" : "false",
 			leftHeld ? "true" : "false",
 			rightHeld ? "true" : "false",
 			oneHeld ? "true" : "false",
