@@ -30,9 +30,12 @@ private:
 
 
 	static const unsigned HURT_HOLD_TIME = 500;
-	static const unsigned SWING_MOVE_TIME = 500;
-	static const unsigned DODGE_MOVE_TIME = 100;
-	static const unsigned DODGE_HOLD_TIME = 500;
+
+	static const unsigned PUNCH_MOVE_TIME = 100;
+	static const unsigned PUNCH_HOLD_TIME = 200;
+
+	static const unsigned DODGE_MOVE_TIME = 250;
+	static const unsigned DODGE_HOLD_TIME = 200;
 
 	const glm::vec3 DEFAULT_IDLE_POSITION = glm::vec3{0, -.5, 0};
 
@@ -40,11 +43,12 @@ private:
 	const float HURT_RIGHT_OFFSET = .1;
 	const float HURT_VERTICAL_OFFSET = .1;
 
-	const float SWING_SPEED = .0075;
+	const float PUNCH_SPEED = .0075;
 	const float DODGE_SPEED = .005;
 
 	const float DODGE_STRETCH_RATIO = 1.527;
 	const float HURT_STRETCH_RATIO = 1.334;
+	const float PUNCH_STRETCH_RATIO = .7576;
 
 	static const unsigned NUM_TEXTURES = 8;
 	const std::string TEXTURE_PATHS[NUM_TEXTURES] = {
@@ -74,7 +78,7 @@ private:
 
 		STATE_DODGE_LEFT,
 		STATE_DODGE_RIGHT,
-		STATE_SWING,
+		STATE_PUNCH,
 
 		STATE_HURT_LEFT,
 		STATE_HURT_RIGHT,
@@ -132,6 +136,9 @@ private:
 		case STATE_HURT_RIGHT:
 			hurtRight();
 			break;
+		case STATE_PUNCH:
+			punch();
+			break;
 		default:
 			std::cout << "Thrasher in invalid state, returning to idle\n";
 			currentState = STATE_IDLE;
@@ -150,14 +157,21 @@ private:
 		globalState->thrasherInvincible = false;
 
 		nextState = STATE_IDLE;
+		// Queen attacking
 		if (globalState->queenAttacking == GlobalState::LEFT) {
 			nextState = STATE_HURT_RIGHT;
 		} else if (globalState->queenAttacking == GlobalState::RIGHT) {
 			nextState = STATE_HURT_LEFT;
+
+		// Dodging
 		} else if (globalState->leftHeld) {
 			nextState = STATE_DODGE_LEFT;
 		} else if (globalState->rightHeld) {
 			nextState = STATE_DODGE_RIGHT;
+
+		// Punching
+		} else if (globalState->upHeld) {
+			nextState = STATE_PUNCH;
 		}
 
 		translationMatrix = glm::translate(glm::mat4{1}, DEFAULT_IDLE_POSITION);
@@ -188,15 +202,18 @@ private:
 				translationMatrix = glm::translate(glm::mat4{1}, DEFAULT_IDLE_POSITION);
 			} else if (globalState->now >= stateStartTime + DODGE_MOVE_TIME + DODGE_HOLD_TIME) {
 				// Returning from dodge
-				float moveAmount = (globalState->now - lastMovement) * DODGE_SPEED;
+				float speedFactor = 1 - (globalState->now - stateStartTime - DODGE_MOVE_TIME - DODGE_HOLD_TIME) / (float)DODGE_MOVE_TIME;
+				float moveAmount = (globalState->now - lastMovement) * DODGE_SPEED * speedFactor;
 				translationMatrix = glm::translate(translationMatrix, glm::vec3{moveAmount, 0, 0});
 			} else if (globalState->now >= stateStartTime + DODGE_MOVE_TIME) {
 				// Dodge hold substate
 				// Do nothing, don't change the matrix
 			} else {
 				// Dodge starting
-				float moveAmount = (globalState->now - lastMovement) * -DODGE_SPEED;
-				translationMatrix = glm::translate(translationMatrix, glm::vec3{moveAmount, 0, 0});
+				float speedFactor = 1 - (globalState->now - stateStartTime) / (float)DODGE_MOVE_TIME;
+				float moveAmount = (globalState->now - lastMovement) * DODGE_SPEED * speedFactor;
+
+				translationMatrix = glm::translate(translationMatrix, glm::vec3{-moveAmount, 0, 0});
 			}
 		}
 
@@ -228,14 +245,16 @@ private:
 				translationMatrix = glm::translate(glm::mat4{1}, DEFAULT_IDLE_POSITION);
 			} else if (globalState->now >= stateStartTime + DODGE_MOVE_TIME + DODGE_HOLD_TIME) {
 				// Returning from dodge
-				float moveAmount = (globalState->now - lastMovement) * -DODGE_SPEED;
-				translationMatrix = glm::translate(translationMatrix, glm::vec3{moveAmount, 0, 0});
+				float speedFactor = 1 - (globalState->now - stateStartTime - DODGE_MOVE_TIME - DODGE_HOLD_TIME) / (float)DODGE_MOVE_TIME;
+				float moveAmount = (globalState->now - lastMovement) * DODGE_SPEED * speedFactor;
+				translationMatrix = glm::translate(translationMatrix, glm::vec3{-moveAmount, 0, 0});
 			} else if (globalState->now >= stateStartTime + DODGE_MOVE_TIME) {
 				// Dodge hold substate
 				// Do nothing, don't change the matrix
 			} else {
 				// Dodge starting
-				float moveAmount = (globalState->now - lastMovement) * DODGE_SPEED;
+				float speedFactor = 1 - (globalState->now - stateStartTime) / (float)DODGE_MOVE_TIME;
+				float moveAmount = (globalState->now - lastMovement) * DODGE_SPEED * speedFactor;
 				translationMatrix = glm::translate(translationMatrix, glm::vec3{moveAmount, 0, 0});
 			}
 		}
@@ -260,6 +279,7 @@ private:
 		if (currentState != lastState) {
 			// Coming from another state
 			stateStartTime = globalState->now;
+			translationMatrix = glm::translate(glm::mat4{1}, DEFAULT_IDLE_POSITION);
 			translationMatrix = glm::translate(translationMatrix, glm::vec3{-HURT_LEFT_OFFSET, -HURT_VERTICAL_OFFSET, 0});
 		} else if (globalState->now >= stateStartTime + HURT_HOLD_TIME) {
 			// Hurt state finished, should return to idle
@@ -287,6 +307,7 @@ private:
 		if (currentState != lastState) {
 			// Coming from another state
 			stateStartTime = globalState->now;
+			translationMatrix = glm::translate(glm::mat4{1}, DEFAULT_IDLE_POSITION);
 			translationMatrix = glm::translate(translationMatrix, glm::vec3{HURT_RIGHT_OFFSET, -HURT_VERTICAL_OFFSET, 0});
 		} else if (globalState->now >= stateStartTime + HURT_HOLD_TIME) {
 			// Hurt state finished, should return to idle
@@ -296,6 +317,59 @@ private:
 		// Otherwise, still hurt, do nothing
 
 		draw(SPRITE_HURT_LEFT, translationMatrix, glm::mat4{1}, scaleMatrix);
+	}
+
+	void punch() {
+		if (globalState->DEBUG)
+			std::cout << "Thrasher is in punch state\n";
+
+		static long long stateStartTime = globalState->now;
+		static long long lastMovement = globalState->now;
+		static bool leftPunch = true;
+
+		// Punching sprite should be stretched
+		glm::mat4 scaleMatrix = glm::scale(glm::mat4{1}, glm::vec3{PUNCH_STRETCH_RATIO, 1, 1});
+
+		globalState->thrasherInvincible = false;
+
+		// State transition logic
+		nextState = STATE_PUNCH;
+
+		// Check for Queen attacking during punch
+		if (globalState->queenAttacking == GlobalState::LEFT) {
+			nextState = STATE_HURT_RIGHT;
+		} else if (globalState->queenAttacking == GlobalState::RIGHT) {
+			nextState = STATE_HURT_LEFT;
+
+		} else if (currentState != lastState) {
+			// Coming from another state
+			stateStartTime = globalState->now;
+			// Switch hands
+			leftPunch = !leftPunch;
+
+		} else {
+			// Coming from the same state
+			// Check substates
+			if (globalState-> now >= stateStartTime + PUNCH_MOVE_TIME + PUNCH_HOLD_TIME + PUNCH_MOVE_TIME) {
+				// Punch state finished, should return to idle
+				nextState = STATE_IDLE;
+				translationMatrix = glm::translate(glm::mat4{1}, DEFAULT_IDLE_POSITION);
+			} else if (globalState->now >= stateStartTime + PUNCH_MOVE_TIME + PUNCH_HOLD_TIME) {
+				// Returning from punch
+				float moveAmount = (globalState->now - lastMovement) * PUNCH_SPEED;
+				translationMatrix = glm::translate(translationMatrix, glm::vec3{0, -moveAmount, 0});
+			} else if (globalState->now >= stateStartTime + PUNCH_MOVE_TIME) {
+				// Punch hold substate
+				globalState->thrasherAttacking = leftPunch ? GlobalState::LEFT : GlobalState::RIGHT;
+			} else {
+				// Punch starting
+				float moveAmount = (globalState->now - lastMovement) * PUNCH_SPEED;
+				translationMatrix = glm::translate(translationMatrix, glm::vec3{0, moveAmount, 0});
+			}
+		}
+
+		draw(leftPunch ? SPRITE_PUNCH_LEFT : SPRITE_PUNCH_RIGHT, translationMatrix, glm::mat4{1}, scaleMatrix);
+		lastMovement = globalState->now;
 	}
 
 	void draw(sprite_t sprite, glm::mat4 translationMatrix = glm::mat4{1}, glm::mat4 rotationMatrix = glm::mat4{1}, glm::mat4 scaleMatrix = glm::mat4{1}) {

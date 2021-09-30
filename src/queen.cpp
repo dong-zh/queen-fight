@@ -29,6 +29,9 @@ private:
 	GlobalState *globalState;
 	GLuint program;
 
+	const int ATTACK_CHANCE = 50;
+	const unsigned TIME_BETWEEN_ATTACK_CHECK = 1000;
+
 	const unsigned HURT_HOLD_TIME = 500;
 	const unsigned SWING_HOLD_TIME = 500;
 	const unsigned SWING_MOVE_TIME = 100;
@@ -41,7 +44,13 @@ private:
 
 	const float HOLD_HORIZONTAL_OFFSET = .2;
 	const float SWING_VERTICAL_MOVE_SPEED = .009;
-	const float SWING_HORIZONTAL_MOVE_SPEED = .004;
+	const float SWING_HORIZONTAL_MOVE_SPEED = .0035;
+
+	const float IDLE1_STRETCH_RATIO = .9651;
+	const float HURT_STRETCH_RATIO = 1.444;
+	const float HIT_STRETCH_RATIO = 1.173;
+	const float SWING_STRETCH_RATIO = 1.353;
+
 
 	static const unsigned NUM_TEXTURES = 9;
 	const std::string TEXTURE_PATHS[NUM_TEXTURES] = {
@@ -57,8 +66,8 @@ private:
 	};
 
 	enum sprite_t {
-		SPRITE_HOLD_LEFT,
-		SPRITE_HOLD_RIGHT,
+		SPRITE_HIT_LEFT,
+		SPRITE_HIT_RIGHT,
 		SPRITE_HURT_LEFT,
 		SPRITE_HURT_RIGHT,
 		SPRITE_IDLE0,
@@ -109,7 +118,7 @@ private:
 	}
 
 	shapes::rect_t makeRectangle() {
-		const float RATIO = 1.75;
+		const float RATIO = (float)111 / (float)55;
 		const float WIDTH = .2;
 		return shapes::makeRectangle(-WIDTH, -(WIDTH * RATIO), WIDTH, WIDTH * RATIO);
 	}
@@ -163,9 +172,6 @@ private:
 	}
 
 	GlobalState::AttackDirection shouldAttack() {
-		const int ATTACK_CHANCE = 20;
-		const unsigned TIME_BETWEEN_ATTACK_CHECK = 500;
-
 		static long long lastAttackCalculation = globalState->now;
 
 		// If time to attack and random generator says attack
@@ -201,7 +207,8 @@ private:
 		}
 
 		translationMatrix = glm::translate(glm::mat4{1}, DEFAULT_IDLE_POSITION);
-		draw(currentSprite, translationMatrix);
+
+		draw(currentSprite, translationMatrix, glm::mat4{1}, currentSprite == SPRITE_IDLE1 ? glm::scale(glm::mat4{1}, glm::vec3{IDLE1_STRETCH_RATIO, 1, 1}) : glm::mat4{1});
 
 		// State switch logic
 		nextState = STATE_IDLE;
@@ -245,7 +252,7 @@ private:
 			}
 		}
 
-		draw(SPRITE_HURT_LEFT, translationMatrix);
+		draw(SPRITE_HURT_LEFT, translationMatrix, glm::mat4{1}, glm::scale(glm::mat4{1}, glm::vec3{HURT_STRETCH_RATIO, 1, 1}));
 	}
 
 	void hurtRight() {
@@ -258,8 +265,8 @@ private:
 		// State transition logic
 		nextState = STATE_HURT_RIGHT;
 		GlobalState::AttackDirection attackDirection = shouldAttack();
-		if (attackDirection == GlobalState::RIGHT) {
-			nextState = STATE_SWING_RIGHT_WAIT;
+		if (attackDirection == GlobalState::LEFT) {
+			nextState = STATE_SWING_LEFT_WAIT;
 		} else if (attackDirection == GlobalState::RIGHT) {
 			nextState = STATE_SWING_RIGHT_WAIT;
 		} else if (currentState != lastState) {
@@ -276,7 +283,7 @@ private:
 			}
 		}
 
-		draw(SPRITE_HURT_RIGHT, translationMatrix);
+		draw(SPRITE_HURT_RIGHT, translationMatrix, glm::mat4{1}, glm::scale(glm::mat4{1}, glm::vec3{HURT_STRETCH_RATIO, 1, 1}));
 	}
 
 	void swingHoldLeft() {
@@ -357,7 +364,7 @@ private:
 		float horizontalMoveAmount = (globalState->now - lastMovement) * SWING_HORIZONTAL_MOVE_SPEED;
 		translationMatrix = glm::translate(translationMatrix, glm::vec3{horizontalMoveAmount, verticalMoveAmount, 0});
 
-		draw(SPRITE_SWING_LEFT, translationMatrix);
+		draw(SPRITE_SWING_LEFT, translationMatrix, glm::mat4{1}, glm::scale(glm::mat4{1}, glm::vec3{SWING_STRETCH_RATIO, 1, 1}));
 		lastMovement = globalState->now;
 	}
 
@@ -389,7 +396,7 @@ private:
 		float horizontalMoveAmount = (globalState->now - lastMovement) * -SWING_HORIZONTAL_MOVE_SPEED;
 		translationMatrix = glm::translate(translationMatrix, glm::vec3{horizontalMoveAmount, verticalMoveAmount, 0});
 
-		draw(SPRITE_SWING_RIGHT, translationMatrix);
+		draw(SPRITE_SWING_RIGHT, translationMatrix, glm::mat4{1}, glm::scale(glm::mat4{1}, glm::vec3{SWING_STRETCH_RATIO, 1, 1}));
 		lastMovement = globalState->now;
 	}
 
@@ -416,7 +423,7 @@ private:
 			}
 		}
 
-		draw(SPRITE_SWING_LEFT, translationMatrix);
+		draw(SPRITE_HIT_LEFT, translationMatrix, glm::mat4{1}, glm::scale(glm::mat4{1}, glm::vec3{HIT_STRETCH_RATIO, 1, 1}));
 	}
 
 	void hitHoldRight() {
@@ -442,7 +449,7 @@ private:
 			}
 		}
 
-		draw(SPRITE_SWING_RIGHT, translationMatrix);
+		draw(SPRITE_HIT_RIGHT, translationMatrix, glm::mat4{1}, glm::scale(glm::mat4{1}, glm::vec3{HIT_STRETCH_RATIO, 1, 1}));
 	}
 
 	void draw(sprite_t sprite, glm::mat4 translationMatrix = glm::mat4{1}, glm::mat4 scaleMatrix = glm::mat4{1}, glm::mat4 rotationMatrix = glm::mat4{1}) {

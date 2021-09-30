@@ -6,7 +6,7 @@
 struct GlobalState {
 	GlobalState(long long now):	now(now) {}
 
-	const bool DEBUG = true;
+	const bool DEBUG = false;
 	unsigned long frameCounter = 0;
 	long long now = -1;
 
