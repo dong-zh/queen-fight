@@ -4,10 +4,7 @@
 #include <stdio.h>
 
 struct GlobalState {
-	GlobalState(long long now)
-	:
-		now(now)
-	{}
+	GlobalState(long long now):	now(now) {}
 
 	const bool DEBUG = true;
 	unsigned long frameCounter = 0;

@@ -16,41 +16,46 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <stb/stb_image.h>
 
-#include "shapes.hpp"
-#include "queen.cpp"
 #include "globalState.hpp"
+#include "queen.cpp"
+#include "thrasher.cpp"
+#include "shapes.hpp"
 
 const bool DEBUG = true;
 // Global variable for key presses
 GlobalState *globalState;
 
 void keyPressHandler(GLFWwindow *window, int key, int scancode, int action, int mods);
+void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
+
 
 int main() {
 	// General configuration
 	stbi_set_flip_vertically_on_load(true);
-	GLFWwindow *win = chicken3421::make_opengl_window(720, 720, "NUTDEALER");
+	GLFWwindow *window = chicken3421::make_opengl_window(720, 720, "NUTDEALER");
 	std::cout << glGetString(GL_VERSION) << '\n';
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
 
 	// Makes the shaders and the program
 	GLuint vertexShader = chicken3421::make_shader("res/shaders/vert.vert", GL_VERTEX_SHADER);
 	GLuint fragShader = chicken3421::make_shader("res/shaders/frag.frag", GL_FRAGMENT_SHADER);
 	GLuint program = chicken3421::make_program(vertexShader, fragShader);
 
-	unsigned long frameCounter = 0;
 	using namespace std::chrono;
 	long long now = time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count();
 
-	glfwSetKeyCallback(win, keyPressHandler);
+	glfwSetKeyCallback(window, keyPressHandler);
 
 	glUseProgram(program);
 
 	globalState = new GlobalState(now);
 
-	auto queen = Queen(program, globalState);
-	while (!glfwWindowShouldClose(win)) {
+	Queen queen = Queen(program, globalState);
+	Thrasher thrasher = Thrasher(program, globalState);
+
+	while (!glfwWindowShouldClose(window)) {
 		globalState->now = time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count();
 		glfwPollEvents();
 
@@ -59,22 +64,19 @@ int main() {
 		glClearColor(0, 0, .5, 1);
 
 		queen.frameTick();
+		thrasher.frameTick();
 
 		if (globalState->DEBUG) {
 			globalState->printGlobalState();
 		}
 
-		++frameCounter;
-		glfwSwapBuffers(win);
+		++globalState->frameCounter;
+		glfwSwapBuffers(window);
 	}
 
 
 
 	return EXIT_SUCCESS;
-}
-
-void processLogic(long long now) {
-
 }
 
 void keyPressHandler(GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -116,4 +118,8 @@ void keyPressHandler(GLFWwindow *window, int key, int scancode, int action, int 
 		globalState->fourHeld = keyPressed;
 		break;
 	}
+}
+
+void frameBufferSizeCallback(GLFWwindow *window, int width, int height) {
+	glViewport(0, 0, width, height);
 }

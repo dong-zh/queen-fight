@@ -18,95 +18,21 @@ public:
 		globalState(globalState)
 	{
 		srand(randomSeed);
-		// this->lastTransition = now;
 		init();
-		// // car0 texture
-		// chicken3421::image_t car0 = chicken3421::load_image("res/img/car0.png");
-		// GLint car0ImageFormat = car0.n_channels == 3 ? GL_RGB : GL_RGBA;
-		// std::cout << "car0 " << car0.n_channels << " channels\n";
-		// texture0 = chicken3421::make_texture();
-		// glBindTexture(GL_TEXTURE_2D, texture0);
-		// glTexImage2D(GL_TEXTURE_2D, 0, car0ImageFormat, car0.width, car0.height, 0, car0ImageFormat, GL_UNSIGNED_BYTE, car0.data);
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		// glGenerateMipmap(GL_TEXTURE_2D);
-		// glBindTexture(GL_TEXTURE_2D, 0);    // unbind
-
-		// // car1 texture
-		// chicken3421::image_t car1 = chicken3421::load_image("res/img/car1.png");
-		// GLint car1ImageFormat = car1.n_channels == 3 ? GL_RGB : GL_RGBA;
-		// std::cout << "car1 " << car1.n_channels << " channels\n";
-		// texture1 = chicken3421::make_texture();
-		// glBindTexture(GL_TEXTURE_2D, texture1);
-		// glTexImage2D(GL_TEXTURE_2D, 0, car1ImageFormat, car1.width, car1.height, 0, car1ImageFormat, GL_UNSIGNED_BYTE, car1.data);
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		// glGenerateMipmap(GL_TEXTURE_2D);
-		// glBindTexture(GL_TEXTURE_2D, 0);    // unbind
-
-		// // Make the rectangle
-		// rectangle = makeRectangle(x, y);
 	}
 
 	void frameTick() {
 		processState();
-		// long long timeSinceLastRender = now - (lastRender == -1 ? now : lastRender);
-		// lastRender = now;
-
-		// if (DEBUG) {
-		// 	std::cout << "now: " << now << '\n';
-		// 	std::cout << "lr: " << lastRender << '\n';
-		// 	std::cout << "tlr: " << timeSinceLastRender << '\n';
-		// }
-
-		// float xTranslate = calculateXTranslate(keyPresses, timeSinceLastRender);
-		// float yTranslate = calculateYTranslate(keyPresses, timeSinceLastRender);
-
-		// if (DEBUG)
-		// 	std::cout << "xTranslate: " << xTranslate << ", yTranslate: " << yTranslate << '\n';
-
-
-		// GLuint location = glGetUniformLocation(program, "tex");
-
-		// // Texture switching logic
-		// glUniform1i(location, 0);
-		// if (now < lastTransition + ANIMATION_HOLD_TIME) {
-		// 	glBindTexture(GL_TEXTURE_2D, lastTexture ? texture1 : texture0);
-		// } else {
-		// 	glBindTexture(GL_TEXTURE_2D, !lastTexture ? texture1 : texture0);
-		// 	lastTexture = !lastTexture;
-		// 	lastTransition = now;
-
-
-		// }
-
-		// translationMatrix = glm::translate(translationMatrix, glm::vec3{xTranslate , yTranslate, 0});
-		// glUniformMatrix4fv(glGetUniformLocation(program, "transformMatrix"), 1, GL_FALSE, glm::value_ptr(translationMatrix * rotationMatrix * scaleMatrix));
-
-		// glBindVertexArray(rectangle.vao);
-		// glBindBuffer(GL_ARRAY_BUFFER, rectangle.vbo);
-
-		// glDrawArrays(GL_TRIANGLES, 0, rectangle.nVerts);
-
-		// glBindTexture(GL_TEXTURE_2D, 0);
-		// glBindBuffer(GL_ARRAY_BUFFER, 0);
-		// glBindVertexArray(0);
-
 	}
 
 private:
-	// static const unsigned ANIMATION_HOLD_TIME = 500;
-	// static const float VERTICAL_SPEED = .0005;
-	// static const float HORIZONTAL_SPEED = .0005;
-
 	GlobalState *globalState;
+	GLuint program;
 
-	static const int NUM_TEXTURES = 9;
-
-	static const unsigned HURT_HOLD_TIME = 500;
-	static const unsigned SWING_HOLD_TIME = 500;
-	static const unsigned SWING_MOVE_TIME = 100;
-	static const unsigned HIT_HOLD_TIME = 500;
+	const unsigned HURT_HOLD_TIME = 500;
+	const unsigned SWING_HOLD_TIME = 500;
+	const unsigned SWING_MOVE_TIME = 100;
+	const unsigned HIT_HOLD_TIME = 500;
 
 	const glm::vec3 DEFAULT_IDLE_POSITION = glm::vec3{0, .5, 0};
 
@@ -117,6 +43,7 @@ private:
 	const float SWING_VERTICAL_MOVE_SPEED = .0075;
 	const float SWING_HORIZONTAL_MOVE_SPEED = .0015;
 
+	static const unsigned NUM_TEXTURES = 9;
 	const std::string TEXTURE_PATHS[NUM_TEXTURES] = {
 		"res/img/queen/queenHitLeft.png",
 		"res/img/queen/queenHitRight.png",
@@ -126,7 +53,7 @@ private:
 		"res/img/queen/queenIdle0Right.png",
 		"res/img/queen/queenIdle1.png",
 		"res/img/queen/queenSwingLeft.png",
-		"res/img/queen/queenSwingRight.png"
+		"res/img/queen/queenSwingRight.png",
 	};
 
 	enum sprite_t {
@@ -138,43 +65,32 @@ private:
 		SPRITE_IDLE0_RIGHT,
 		SPRITE_IDLE1,
 		SPRITE_SWING_LEFT,
-		SPRITE_SWING_RIGHT
+		SPRITE_SWING_RIGHT,
 	};
 
-	// I should really use a proper state pattern here but I don't know enough C++ to do that
 	enum state_t {
 		STATE_IDLE,
+
 		STATE_SWING_LEFT_WAIT,
 		STATE_SWING_LEFT_MOVE,
 		STATE_HIT_LEFT_HOLD,
+
 		STATE_SWING_RIGHT_WAIT,
 		STATE_SWING_RIGHT_MOVE,
 		STATE_HIT_RIGHT_HOLD,
+
 		STATE_HURT_LEFT,
-		STATE_HURT_RIGHT
+		STATE_HURT_RIGHT,
 	};
 
 	state_t lastState = STATE_IDLE;
 	state_t currentState = STATE_IDLE;
 	state_t nextState = STATE_IDLE;
 
-	// long long lastTransition;
-	// long long lastRender = -1;
-
-	GLuint program;
-
-	// GLuint texture0;
-	// GLuint texture1;
-
 	shapes::rect_t rectangle;
-
 	GLuint textures[NUM_TEXTURES];
 
-	// int lastTexture = 0;
-
 	glm::mat4 translationMatrix = glm::mat4{1};
-	// glm::mat4 scaleMatrix = glm::mat4{1};
-	// glm::mat4 rotationMatrix = glm::mat4{1};
 
 	void init() {
 		for (int i = 0; i < NUM_TEXTURES; ++i) {
@@ -203,44 +119,43 @@ private:
 		globalState->queenAttacking = GlobalState::NOT_ATTACKING;
 		globalState->queenInvincible = true;
 
-
+		// I should really use a proper state pattern here but I don't know enough C++ to do that
 		switch (currentState) {
 		case STATE_IDLE:
-			idleState();
+			idle();
 			break;
 
 		case STATE_HURT_LEFT:
-			hurtLeftState();
+			hurtLeft();
 			break;
 		case STATE_HURT_RIGHT:
-			hurtRightState();
+			hurtRight();
 			break;
 
 		case STATE_SWING_LEFT_WAIT:
-			swingLeftHoldState();
+			swingHoldLeft();
 			break;
 		case STATE_SWING_LEFT_MOVE:
-			swingLeftMoveState();
+			swingMoveLeft();
 			break;
 		case STATE_HIT_LEFT_HOLD:
-			hitLeftHoldState();
+			hitHoldLeft();
 			break;
 
 		case STATE_SWING_RIGHT_WAIT:
-			swingRightHoldState();
+			swingHoldRight();
 			break;
 		case STATE_SWING_RIGHT_MOVE:
-			swingRightMoveState();
+			swingMoveRight();
 			break;
 		case STATE_HIT_RIGHT_HOLD:
-			hitRightHoldState();
+			hitHoldRight();
 			break;
 
 		default:
 			if (globalState->DEBUG)
 				std::cout << "INVALID STATE\n";
 		}
-
 
 		lastState = currentState;
 		currentState = nextState;
@@ -265,9 +180,10 @@ private:
 		return GlobalState::NOT_ATTACKING;
 	}
 
-	void idleState() {
+	// States
+	void idle() {
 		if (globalState->DEBUG)
-			std::cout << "Queen in idle state\n";
+			std::cout << "Queen is in idle state\n";
 
 		const unsigned IDLE_TEXTURE_HOLD_TIME = 500;
 
@@ -300,15 +216,12 @@ private:
 		}
 	}
 
-	void hurtLeftState() {
+	void hurtLeft() {
 		if (globalState->DEBUG)
 			std::cout << "Queen is in hurt left state\n";
 
 		const unsigned HURT_LEFT_HOLD_TIME = HURT_HOLD_TIME;
 		static long long stateStartTime = -1;
-
-		globalState->queenInvincible = false;
-
 
 		// State transition logic
 		nextState = STATE_HURT_LEFT;
@@ -334,15 +247,12 @@ private:
 		draw(SPRITE_HURT_LEFT, translationMatrix);
 	}
 
-	void hurtRightState() {
+	void hurtRight() {
 		if (globalState->DEBUG)
 			std::cout << "Queen is in hurt right state\n";
 
 		const unsigned HURT_RIGHT_HOLD_TIME = HURT_HOLD_TIME;
 		static long long stateStartTime = -1;
-
-		globalState->queenInvincible = false;
-
 
 		// State transition logic
 		nextState = STATE_HURT_RIGHT;
@@ -368,7 +278,7 @@ private:
 		draw(SPRITE_HURT_RIGHT, translationMatrix);
 	}
 
-	void swingLeftHoldState() {
+	void swingHoldLeft() {
 		if (globalState->DEBUG)
 			std::cout << "Queen is in swing left hold state\n";
 
@@ -393,7 +303,7 @@ private:
 		draw(SPRITE_IDLE0, translationMatrix);
 	}
 
-	void swingRightHoldState() {
+	void swingHoldRight() {
 		if (globalState->DEBUG)
 			std::cout << "Queen is in swing right hold state\n";
 
@@ -418,7 +328,7 @@ private:
 		draw(SPRITE_IDLE0_RIGHT, translationMatrix);
 	}
 
-	void swingLeftMoveState() {
+	void swingMoveLeft() {
 		if (globalState->DEBUG)
 			std::cout << "Queen is in left move state\n";
 
@@ -450,7 +360,7 @@ private:
 		lastMovement = globalState->now;
 	}
 
-	void swingRightMoveState() {
+	void swingMoveRight() {
 		if (globalState->DEBUG)
 			std::cout << "Queen is in right move state\n";
 
@@ -482,7 +392,7 @@ private:
 		lastMovement = globalState->now;
 	}
 
-	void hitLeftHoldState() {
+	void hitHoldLeft() {
 		if (globalState->DEBUG)
 			std::cout << "Queen is in left hit state\n";
 
@@ -508,7 +418,7 @@ private:
 		draw(SPRITE_SWING_LEFT, translationMatrix);
 	}
 
-	void hitRightHoldState() {
+	void hitHoldRight() {
 		if (globalState->DEBUG)
 			std::cout << "Queen is in right hit state\n";
 
@@ -533,8 +443,6 @@ private:
 
 		draw(SPRITE_SWING_RIGHT, translationMatrix);
 	}
-
-
 
 	void draw(sprite_t sprite, glm::mat4 translationMatrix = glm::mat4{1}, glm::mat4 scaleMatrix = glm::mat4{1}, glm::mat4 rotationMatrix = glm::mat4{1}) {
 		glUniformMatrix4fv(glGetUniformLocation(program, "transformMatrix"), 1, GL_FALSE, glm::value_ptr(translationMatrix * rotationMatrix * scaleMatrix));
