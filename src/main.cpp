@@ -27,16 +27,16 @@ GlobalState *globalState;
 void keyPressHandler(GLFWwindow *window, int key, int scancode, int action, int mods);
 
 int main() {
+	// General configuration
 	stbi_set_flip_vertically_on_load(true);
-	GLFWwindow *win = chicken3421::make_opengl_window(720, 720, "Assignment 1");
+	GLFWwindow *win = chicken3421::make_opengl_window(720, 720, "NUTDEALER");
 	std::cout << glGetString(GL_VERSION) << '\n';
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// Make the shaders
+	// Makes the shaders and the program
 	GLuint vertexShader = chicken3421::make_shader("res/shaders/vert.vert", GL_VERTEX_SHADER);
 	GLuint fragShader = chicken3421::make_shader("res/shaders/frag.frag", GL_FRAGMENT_SHADER);
-
 	GLuint program = chicken3421::make_program(vertexShader, fragShader);
 
 	unsigned long frameCounter = 0;
@@ -52,10 +52,11 @@ int main() {
 	auto queen = Queen(program, globalState);
 	while (!glfwWindowShouldClose(win)) {
 		globalState->now = time_point_cast<milliseconds>(system_clock::now()).time_since_epoch().count();
-
 		glfwPollEvents();
+
+		// Set background
 		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(0, 0, 0, 1);
+		glClearColor(0, 0, .5, 1);
 
 		queen.frameTick();
 
