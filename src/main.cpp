@@ -78,6 +78,7 @@ int main() {
 		++globalState->frameCounter;
 		glfwSwapBuffers(window);
 
+		// For debugging game over
 		// globalState->queenHealth = 0;
 		// break;
 	}

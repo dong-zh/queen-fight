@@ -6,7 +6,7 @@ If you think any of the questions within the sections are not applicable, please
 
 ### How have you fulfilled this requirement?
 
-This project completes this task and I've tested that the app builds with no errors and runs under the assignment environment provided by the course.
+This project completes this task and I've tested that the app builds with no errors and runs under the assignment environment provided by the course. The application was developed in Ubuntu (WSL2) using VS Code.
 
 ### When your application is run, what should the tutor look for or do to see that you have fulfilled this requirement?
 
@@ -68,11 +68,11 @@ Giga-Queen, Thrasher, and cityscape background are different rectangles with dif
 
 ### How have you fulfilled this requirement?
 
-This project is a recreation of (a part of) the Giga-Queen fight from the recently released Deltarune Chapter 2. The game's developer is Toby Fox and Temmie Chang is the main artist for the game. All of the sprites used are from the original game. The original fight can be watched [here](https://youtu.be/EUYySQozClU?t=360) (obviously contains Deltarune Chapter 2 spoilers). The health of both Thrasher and Giga-Queen are printed in the terminal every time somebody gets hit.
+This project is a recreation of (a part of) the Giga-Queen fight from the recently released Deltarune Chapter 2. The application's title is anagram of Deltarune, which itself is an anagram of the original Undertale. The original fight can be watched [here](https://youtu.be/EUYySQozClU?t=360) (obviously contains Deltarune Chapter 2 spoilers). The health of both Thrasher and Giga-Queen are printed in the terminal every time somebody gets hit.
 
 ### When your application is run, what should the tutor look for or do to see that you have fulfilled this requirement?
 
-The can play the game using the arrow keys. Left and right arrow to dodge, and up to punch.
+The tutor can play the game using the arrow keys. Left and right arrow to dodge, and up to punch.
 
 If I haven't got the sound working yet, they should play [this](https://www.youtube.com/watch?v=vViBhJ_sAh8) in the background for the full experience.
 
@@ -84,10 +84,15 @@ If the tutor really wants to understand the code, `thrasher.cpp` is better docum
 
 ## Use of External Libraries
 
+`chicken3421` and `shapes.hpp` from the tutorials
+
 ### What does the library do?
 
-Write your answer here...
-
+They provider helper functions for making the window and draws rectangles
 ### Why did you decide to use it?
 
-Write your answer here...
+It's easier and we were allowed to use code from the tutorials.
+
+## Credits
+
+Deltarune was developed by Toby Fox. Temmie Chang is the main artist. All of the sprites were extracted from the original game. All credit for this project's idea and art goes to Toby and his team.

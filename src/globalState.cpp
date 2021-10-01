@@ -15,13 +15,20 @@ struct GlobalState {
  */
 	GlobalState(long long now):	now(now) {}
 
+	// Attack power
 	const int QUEEN_ATTACK_POWER = 5;
 	const int THRASHER_ATTACK_POWER = 5;
 
+	// Enable debug for lots of prints
 	const bool DEBUG = false;
+
+	// Counts how many frames it's been since start
 	unsigned long frameCounter = 0;
+
+	// The current time of this particular state
 	long long now = -1;
 
+	// The attacking direction looking from Thrasher
 	enum AttackDirection {
 		NOT_ATTACKING,
 		LEFT,
@@ -52,7 +59,7 @@ struct GlobalState {
 	AttackDirection thrasherAttacking = NOT_ATTACKING;
 
 	/**
-	 * @brief Checks whether combat is occurign and deducts HP accordingly. Also checks for game over condition
+	 * @brief Checks whether combat is occuring and deducts HP accordingly. Also checks for game over condition
 	 */
 	void checkCombat() {
 		if (queenAttacking != NOT_ATTACKING && !thrasherInvincible) {
