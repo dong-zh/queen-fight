@@ -89,16 +89,13 @@ int main() {
 }
 
 void doGameOver(GLFWwindow *window, GLuint program) {
+	Background background = globalState->queenHealth <= 0 ? Background(program, WIN_IMAGE_PATH) : Background(program, LOSE_IMAGE_PATH);
+
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0, 0, 0, 1);
-		if (globalState->queenHealth <= 0) {
-			// Player won
-			Background(program, WIN_IMAGE_PATH).draw();
-		} else {
-			Background(program, LOSE_IMAGE_PATH).draw();
-		}
+		background.draw();
 		glfwSwapBuffers(window);
 	}
 }
