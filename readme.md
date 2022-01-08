@@ -25,7 +25,7 @@ In a `bash` shell, run
 
 This will fetch all the dependencies. `-G Ninja` is only required in Windows.
 
-If you're using VS Code, you can just press the run button at the bottom of the Window. Otherwise,
+If you're using VS Code with the `cmake` extension, you can just press the run button at the bottom of the window. Otherwise,
 
 ```bash
 cmake build
