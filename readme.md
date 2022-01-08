@@ -23,7 +23,7 @@ In a `bash` shell, run
 ./fetch_deps.sh -G Ninja
 ```
 
-This will fetch all the dependencies.
+This will fetch all the dependencies. `-G Ninja` is only required in Windows.
 
 If you're using VS Code, you can just press the run button at the bottom of the Window. Otherwise,
 
@@ -38,6 +38,7 @@ cmake --build build
 ```
 
 will generate the executable in the `bin` folder.
+
 ## Credits
 
 [Deltarune](https://deltarune.com/) is a game by [Toby Fox](https://twitter.com/Tobyfox). The sprites were taken from the game and I downloaded them [here](https://www.spriters-resource.com/pc_computer/deltarune/). The sprites were created by Deltarune's main artist [Temmie Chang](https://twitter.com/tuyoki), and her team. The idea for this project was obviously inspired by Deltarune.
