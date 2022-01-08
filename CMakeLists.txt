@@ -11,6 +11,7 @@ if (NOT (EXISTS ${PROJECT_SOURCE_DIR}/lib))
     message(STATUS "Dependencies not found. Please run fetch_deps.sh [-G Ninja] from the project root and reconfigure")
 endif()
 
+find_package(tinyobjloader HINTS ${PROJECT_SOURCE_DIR}/lib)
 find_package(glad REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
 find_package(glfw3 REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
 find_package(glm REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)

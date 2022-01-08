@@ -64,7 +64,7 @@ Giga-Queen, Thrasher, and cityscape background are different rectangles with dif
 
 `thrasher.cpp` contains the state transitions and game logic. In each of the state functions, the tutor can see the corresponding textures for that particular state.
 
-### Section 5: Subjective Mark
+## Section 5: Subjective Mark
 
 ### How have you fulfilled this requirement?
 
