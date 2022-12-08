@@ -9,7 +9,7 @@ mkdir lib
 cd lib || exit
 
 echo "Fetching dependencies..."
-git clone https://gitlab.cse.unsw.edu.au/COMP3421/chicken3421-package ${tmp_dir}
+git clone git@github.com:dong-zh/chicken3421.git ${tmp_dir}
 cd ${tmp_dir} || exit
 
 if [ $# -eq 0 ];

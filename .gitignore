@@ -7,3 +7,5 @@ build
 lib/*
 !lib/CMakeLists.txt
 !lib/fetch_deps.sh
+
+.cache
