@@ -1,0 +1,3 @@
+[submodule "lib/chicken3421"]
+	path = lib/chicken3421
+	url = git@github.com:dong-zh/chicken3421.git

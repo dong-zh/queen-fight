@@ -7,18 +7,20 @@ set(CMAKE_CXX_STANDARD 17)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # If I was better at CMake I would make this nicer
-if (NOT (EXISTS ${PROJECT_SOURCE_DIR}/lib))
-    message(STATUS "Dependencies not found. Please run fetch_deps.sh [-G Ninja] from the project root and reconfigure")
-endif()
+# if (NOT (EXISTS ${PROJECT_SOURCE_DIR}/lib))
+#     message(STATUS "Dependencies not found. Please run fetch_deps.sh [-G Ninja] from the project root and reconfigure")
+# endif()
 
-find_package(tinyobjloader HINTS ${PROJECT_SOURCE_DIR}/lib)
-find_package(glad REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
-find_package(glfw3 REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
-find_package(glm REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
-find_package(stb REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
-find_package(chicken3421 REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
+# find_package(tinyobjloader HINTS ${PROJECT_SOURCE_DIR}/lib)
+# find_package(glad REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
+# find_package(glfw3 REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
+# find_package(glm REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
+# find_package(stb REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
+# find_package(chicken3421 REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
 
-set(COMMON_LIBS glad::glad glm::glm glfw stb chicken3421)
+add_subdirectory(lib/chicken3421)
+set(COMMON_LIBS chicken3421)
+# set(COMMON_LIBS glad::glad glm::glm glfw stb chicken3421)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 

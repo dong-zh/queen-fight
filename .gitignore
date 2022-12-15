@@ -4,8 +4,8 @@ build
 .vscode
 .idea
 
-lib/*
-!lib/CMakeLists.txt
-!lib/fetch_deps.sh
+# lib/*
+# !lib/CMakeLists.txt
+# !lib/fetch_deps.sh
 
 .cache
