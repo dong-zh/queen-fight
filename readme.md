@@ -8,7 +8,7 @@ This project is a basic recreation of the Giga-Queen boss fight in Deltarune. It
 
 [`assignment_justification.md`](assignment_justification.md) contains documentation for the assignment.
 
-You can download the compiled Windows binary in the [releases](https://github.com/dong-zh/queen-fight/releases) section, or compile it yourself with the [instructions](#building) below.
+You can download the compiled Windows binary in the [releases](https://github.com/dong-zh/queen-fight/releases) section. You must extract the archive before running it. Alternatively, you can compile it yourself with the [instructions](#building) below.
 
 ## Game Controls
 
