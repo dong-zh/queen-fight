@@ -4,9 +4,11 @@
 
 This project is a basic recreation of the Giga-Queen boss fight in Deltarune. It's an assignment for UNSW's graphics course in 21T3.
 
-`assignment_spec.md` contains the original specifications of the assignment.
+[`assignment_specs.md`](assignment_specs.md) contains the original specifications of the assignment.
 
-`assignment_justification.md` contains documentation for the assignment.
+[`assignment_justification.md`](assignment_justification.md) contains documentation for the assignment.
+
+You can download the compiled Windows binary in the [releases](https://github.com/dong-zh/queen-fight/releases) section, or compile it yourself with the [instructions](#building) below.
 
 ## Game Controls
 
@@ -15,34 +17,43 @@ This project is a basic recreation of the Giga-Queen boss fight in Deltarune. It
 
 ## Building
 
-You need `cmake` to build the project. For Windows, the graphics course recommended using the `MSYS2` toolchain and `gcc-10`.
+### Prerequisites
 
-In a `bash` shell, run
+You'll need
 
-```bash
-./fetch_deps.sh -G Ninja
-```
+- [`cmake`](https://cmake.org/)
+- A C++ compiler for [`cmake`](https://cmake.org/) to discover, like [`clang++`](https://clang.llvm.org/)
+- [`ninja`](https://ninja-build.org/)
+- [Git](https://git-scm.com/)
+- [Python 3](https://www.python.org/)
 
-This will fetch all the dependencies. `-G Ninja` is only required in Windows.
+### Steps
 
-If you're using VS Code with the `cmake` extension, you can just press the run button at the bottom of the window. Otherwise,
+1. Clone this repository and `cd` into the directory
+2. Initialise the Git submodules with
 
-```bash
-cmake build
-```
+    ```sh
+    git submodule update --init --recursive
+    ```
 
-will generate the resource files, and
+3. Generate build files with
 
-```bash
-cmake --build build
-```
+    ```sh
+    cmake -G Ninja -B build
+    ```
 
-will generate the executable in the `bin` folder.
+4. Build the code with
+
+    ```sh
+    ninja -C build
+    ```
+
+The executable (`ass1`) will be in the `bin` directory. You must `cd` into that directory before running the executable.
 
 ## Credits
 
 [Deltarune](https://deltarune.com/) is a game by [Toby Fox](https://twitter.com/Tobyfox). The sprites were taken from the game and I downloaded them [here](https://www.spriters-resource.com/pc_computer/deltarune/). The sprites were created by Deltarune's main artist [Temmie Chang](https://twitter.com/tuyoki), and her team. The idea for this project was obviously inspired by Deltarune.
 
-The [`chicken3421` library](https://gitlab.cse.unsw.edu.au/COMP3421/chicken3421-package), the `cmake` build environment, `shapes.cpp`, and `shapes.hpp` was set up and written by UNSW's COMP3421 teaching team in 21T3.
+The [`chicken3421` library](https://github.com/dong-zh/chicken3421), the `cmake` build environment, `shapes.cpp`, and `shapes.hpp` was set up and written by UNSW's COMP3421 teaching team in 21T3.
 
 This project also uses the [GLFW library](https://www.glfw.org/).
