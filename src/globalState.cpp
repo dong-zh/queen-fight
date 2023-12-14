@@ -1,7 +1,7 @@
 #ifndef GLOBAL_STATE_CPP
 #define GLOBAL_STATE_CPP
 
-#include <stdio.h>
+#include <string>
 #include <iostream>
 
 /**
