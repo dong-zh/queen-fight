@@ -33,6 +33,15 @@ const std::string WIN_IMAGE_PATH = "res/img/youWon.png";
 const std::string LOSE_IMAGE_PATH = "res/img/gameOver.png";
 
 int main() {
+	std::cout << "How to play:\n";
+	std::cout << "\tPress left and right arrow to dodge left and right.\n";
+	std::cout << "\tPress up to punch.\n\n";
+
+	std::cout << "The healths are displayed here.\n\n";
+	std::cout << "Press enter to start.\n";
+
+	std::cin.get();
+
 	// General configuration
 	stbi_set_flip_vertically_on_load(true);
 	GLFWwindow *window = chicken3421::make_opengl_window(900, 900, "NUTDEALER");
