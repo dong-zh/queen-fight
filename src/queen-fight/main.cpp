@@ -1,20 +1,20 @@
 // C++17 doesn't have std::pi
 #define _USE_MATH_DEFINES
-#include <cmath>
 #include <iostream>
 
 #include <cstdlib>
 #include <chrono>
 
-#include <glad/glad.h>
+// #include <glad/gl.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
-#include <chicken3421/chicken3421.hpp>
+#include <chicken3421.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <stb/stb_image.h>
+#include <stb_image.h>
 
 #include "globalState.cpp"
 #include "queen.cpp"

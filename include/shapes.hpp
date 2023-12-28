@@ -1,8 +1,8 @@
 #ifndef SHAPES_HPP
 #define SHAPES_HPP
 
-#include <chicken3421/chicken3421.hpp>
-#include <glad/glad.h>
+#include <chicken3421.hpp>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
