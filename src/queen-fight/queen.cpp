@@ -3,10 +3,10 @@
 #define QUEEN_CPP
 
 #include <iostream>
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
-#include <chicken3421/chicken3421.hpp>
+#include <chicken3421.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>

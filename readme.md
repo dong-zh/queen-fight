@@ -30,30 +30,27 @@ You'll need
 ### Steps
 
 1. Clone this repository and `cd` into the directory
-2. Initialise the Git submodules with
 
-    ```sh
-    git submodule update --init --recursive
-    ```
-
-3. Generate build files with
+1. Generate build files with
 
     ```sh
     cmake -G Ninja -B build
     ```
 
-4. Build the code with
+1. Build the code with
 
     ```sh
     ninja -C build
     ```
 
-The executable (`ass1`) will be in the `bin` directory. You must `cd` into that directory before running the executable.
+    If you see a message that says `GL/gl.h` can't be found, try tracking down where that is and changing it to `glad/gl.h`
+
+The executable (`nutdealer`) will be in the `bin` directory. You must `cd` into that directory before running the executable.
 
 ## Credits
 
 [Deltarune](https://deltarune.com/) is a game by [Toby Fox](https://twitter.com/Tobyfox). The sprites were taken from the game and I downloaded them [here](https://www.spriters-resource.com/pc_computer/deltarune/). The sprites were created by Deltarune's main artist [Temmie Chang](https://twitter.com/tuyoki), and her team. The idea for this project was obviously inspired by Deltarune.
 
-The [`chicken3421` library](https://github.com/dong-zh/chicken3421), the `cmake` build environment, `shapes.cpp`, and `shapes.hpp` was set up and written by UNSW's COMP3421 teaching team in 21T3.
+The [`chicken3421` library](https://github.com/dong-zh/chicken3421), the `cmake` build environment, `shapes.cpp`, and `shapes.hpp` was set up and written by UNSW's COMP3421 teaching team in 21T3. I rewrote the build steps and slightly modified and integrated the `chicken3421` library into this project.
 
-This project also uses the [GLFW library](https://www.glfw.org/).
+This project also fetches GLFW, GLAD, and GLM from [this](https://github.com/cmmw/imgui-glfw-glad-glm.git) repository, and [`tinyobjloader`](https://github.com/tinyobjloader/tinyobjloader).

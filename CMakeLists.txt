@@ -1,38 +1,46 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.17)
+include(FetchContent)
 
-project("COMP3421 Assignment 1")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
+# Set the project name
+project(nutdealer)
+
+# Specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+# Where to find the libraries
+file(GLOB CHICKEN3421_SOURCES "src/chicken3421/*.cpp")
+file(GLOB STB_CMAKE_SOURCES "src/stb-cmake/*.cpp")
+file(GLOB QUEEN_FIGHT_SOURCES "src/queen-fight/*.cpp")
 
-# If I was better at CMake I would make this nicer
-# if (NOT (EXISTS ${PROJECT_SOURCE_DIR}/lib))
-#     message(STATUS "Dependencies not found. Please run fetch_deps.sh [-G Ninja] from the project root and reconfigure")
-# endif()
+add_executable(nutdealer ${QUEEN_FIGHT_SOURCES} ${CHICKEN3421_SOURCES}
+                         ${STB_CMAKE_SOURCES})
 
-# find_package(tinyobjloader HINTS ${PROJECT_SOURCE_DIR}/lib)
-# find_package(glad REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
-# find_package(glfw3 REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
-# find_package(glm REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
-# find_package(stb REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
-# find_package(chicken3421 REQUIRED HINTS ${PROJECT_SOURCE_DIR}/lib)
+# Link everything together
+target_link_libraries(nutdealer glfw glad glm tinyobjloader)
 
-add_subdirectory(lib/chicken3421)
-set(COMMON_LIBS chicken3421)
-# set(COMMON_LIBS glad::glad glm::glm glfw stb chicken3421)
+# Add external libraries
+FetchContent_Declare(
+  imgui-glfw-glad-glm
+  GIT_REPOSITORY https://github.com/cmmw/imgui-glfw-glad-glm.git
+  GIT_TAG master)
+FetchContent_Declare(
+  tinyobjloader
+  GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader
+  GIT_TAG release)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
+FetchContent_MakeAvailable(imgui-glfw-glad-glm tinyobjloader)
 
-include(copy_resources)
-copy_resources(${CMAKE_CURRENT_LIST_DIR}/res ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/res)
+# Specify include directories
+target_include_directories(nutdealer PRIVATE "${PROJECT_BINARY_DIR}"
+                                             "${PROJECT_SOURCE_DIR}/include")
 
-add_executable(ass1)
-target_include_directories(ass1 PUBLIC include)
-target_sources(ass1 PRIVATE ${PROJECT_SOURCE_DIR}/src/main.cpp)
-target_sources(ass1 PRIVATE ${PROJECT_SOURCE_DIR}/src/shapes.cpp)
-target_sources(ass1 PRIVATE ${PROJECT_SOURCE_DIR}/src/queen.cpp)
-target_sources(ass1 PRIVATE ${PROJECT_SOURCE_DIR}/src/thrasher.cpp)
-target_sources(ass1 PRIVATE ${PROJECT_SOURCE_DIR}/src/background.cpp)
-target_sources(ass1 PRIVATE ${PROJECT_SOURCE_DIR}/src/globalState.cpp)
-target_link_libraries(ass1 PUBLIC ${COMMON_LIBS})
+# Copy the res directory to the bin directory after the build
+add_custom_command(
+  TARGET nutdealer
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res
+          $<TARGET_FILE_DIR:${PROJECT_NAME}>/res)
