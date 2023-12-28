@@ -43,6 +43,8 @@ You'll need
     ninja -C build
     ```
 
+    If you see a message that says `GL/gl.h` can't be found, try tracking down where that is and changing it to `glad/gl.h`
+
 The executable (`nutdealer`) will be in the `bin` directory. You must `cd` into that directory before running the executable.
 
 ## Credits
